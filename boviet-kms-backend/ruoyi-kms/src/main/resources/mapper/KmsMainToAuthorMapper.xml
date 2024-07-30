@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.kms.mapper.KmsMainToAuthorMapper">
+
+    <resultMap type="KmsMainToAuthor" id="KmsMainToAuthorResult">
+        <result property="kId"    column="k_id"    />
+        <result property="authorId"    column="author_id"    />
+        <result property="authorName"    column="author_name"    />
+    </resultMap>
+
+    <sql id="selectKmsMainToAuthorVo">
+        select k_id, author_id,author_name from kms_main_to_author
+    </sql>
+
+    <select id="selectKmsMainToAuthorList" parameterType="KmsMainToAuthor" resultMap="KmsMainToAuthorResult">
+        <include refid="selectKmsMainToAuthorVo"/>
+        <where>
+        </where>
+    </select>
+
+    <select id="selectKmsMainToAuthorByKId" parameterType="Long" resultMap="KmsMainToAuthorResult">
+        <include refid="selectKmsMainToAuthorVo"/>
+        where k_id = #{kId}
+    </select>
+
+    <insert id="insertKmsMainToAuthor" parameterType="KmsMainToAuthor">
+        insert into kms_main_to_author
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="kId != null">k_id,</if>
+            <if test="authorId != null">author_id,</if>
+            <if test="authorName != null">author_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="kId != null">#{kId},</if>
+            <if test="authorId != null">#{authorId},</if>
+            <if test="authorName != null">#{authorName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKmsMainToAuthor" parameterType="KmsMainToAuthor">
+        update kms_main_to_author
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="authorId != null">author_id = #{authorId},</if>
+        </trim>
+        where k_id = #{kId}
+    </update>
+
+    <delete id="deleteKmsMainToAuthorByKId" parameterType="Long">
+        delete from kms_main_to_author where k_id = #{kId}
+    </delete>
+
+    <delete id="deleteKmsMainToAuthorByKIds" parameterType="String">
+        delete from kms_main_to_author where k_id in
+        <foreach item="kId" collection="array" open="(" separator="," close=")">
+            #{kId}
+        </foreach>
+    </delete>
+</mapper>

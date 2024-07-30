@@ -1,0 +1,15 @@
+$--color-primary: #409EFF; // 主色
+$color-opacity-10: rgba($--color-primary, 0.1);
+$color-opacity-20: rgba($--color-primary, 0.2);
+$color-opacity-30: rgba($--color-primary, 0.3);
+$color-opacity-40: rgba($--color-primary, 0.4);
+$color-opacity-50: rgba($--color-primary, 0.5);
+$color-opacity-60: rgba($--color-primary, 0.6);
+$color-opacity-70: rgba($--color-primary, 0.7);
+$color-opacity-80: rgba($--color-primary, 0.8);
+$color-opacity-90: rgba($--color-primary, 0.9);
+$primary-black-75: mix($--color-primary, #303133, 75%);
+$primary-white-75: mix($--color-primary, #fff, 75%);
+$primary-white-10: mix($--color-primary, #fff, 10%);
+$primary-mix-1: mix($primary-white-10, #f2f2f2, 50%);
+$primary-mix-2: mix($primary-mix-1, #f9f9fa, 50%); //f4f7fa

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.activiti.mapper.SysActivitiTemplateMapper">
+
+    <resultMap type="SysActivitiTemplate" id="SysActivitiTemplateResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="processDefId"    column="process_def_id"    />
+        <result property="processKey"    column="process_key"    />
+        <result property="processDeploymentId"    column="process_deployment_id"    />
+        <result property="processDefXml"    column="process_def_xml"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="updateUserId"    column="update_user_id"    />
+    </resultMap>
+
+    <sql id="selectSysActivitiTemplateVo">
+        select id, name, description, process_def_id, process_key, process_deployment_id, process_def_xml, create_time, update_time, create_by, update_by, create_user_id, update_user_id from sys_activiti_template
+    </sql>
+
+    <select id="selectSysActivitiTemplateList" parameterType="SysActivitiTemplate" resultMap="SysActivitiTemplateResult">
+        <include refid="selectSysActivitiTemplateVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="processDefId != null  and processDefId != ''"> and process_def_id = #{processDefId}</if>
+            <if test="processKey != null  and processKey != ''"> and process_key = #{processKey}</if>
+            <if test="processDeploymentId != null  and processDeploymentId != ''"> and process_deployment_id = #{processDeploymentId}</if>
+            <if test="processDefXml != null  and processDefXml != ''"> and process_def_xml = #{processDefXml}</if>
+            <if test="createUserId != null  and createUserId != ''"> and create_user_id = #{createUserId}</if>
+            <if test="updateUserId != null  and updateUserId != ''"> and update_user_id = #{updateUserId}</if>
+        </where>
+    </select>
+
+    <select id="selectSysActivitiTemplateById" parameterType="Long" resultMap="SysActivitiTemplateResult">
+        <include refid="selectSysActivitiTemplateVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysActivitiTemplate" keyProperty="id" useGeneratedKeys="true" parameterType="SysActivitiTemplate">
+        insert into sys_activiti_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="description != null">description,</if>
+            <if test="processDefId != null">process_def_id,</if>
+            <if test="processKey != null">process_key,</if>
+            <if test="processDeploymentId != null">process_deployment_id,</if>
+            <if test="processDefXml != null">process_def_xml,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createUserId != null">create_user_id,</if>
+            <if test="updateUserId != null">update_user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="processDefId != null">#{processDefId},</if>
+            <if test="processKey != null">#{processKey},</if>
+            <if test="processDeploymentId != null">#{processDeploymentId},</if>
+            <if test="processDefXml != null">#{processDefXml},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysActivitiTemplate" parameterType="SysActivitiTemplate">
+        update sys_activiti_template
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="processDefId != null">process_def_id = #{processDefId},</if>
+            <if test="processKey != null">process_key = #{processKey},</if>
+            <if test="processDeploymentId != null">process_deployment_id = #{processDeploymentId},</if>
+            <if test="processDefXml != null">process_def_xml = #{processDefXml},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createUserId != null">create_user_id = #{createUserId},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysActivitiTemplateById" parameterType="Long">
+        delete from sys_activiti_template where id = #{id}
+    </delete>
+
+    <delete id="deleteSysActivitiTemplateByIds" parameterType="Long">
+        delete from sys_activiti_template where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

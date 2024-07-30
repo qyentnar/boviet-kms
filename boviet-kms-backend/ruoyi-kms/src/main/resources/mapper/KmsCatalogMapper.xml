@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.kms.mapper.KmsCatalogMapper">
+
+    <resultMap type="KmsCatalog" id="KmsCatalogResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="sort"    column="sort"    />
+        <result property="description"    column="description"    />
+        <result property="cover"    column="cover"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createUserId"    column="create_user_id"    />
+        <result property="updateUserId"    column="update_user_id"    />
+        <result property="templateId"    column="template_id"    />
+    </resultMap>
+
+    <sql id="selectKmsCatalogVo">
+        select id, title, parent_id, sort, description, cover,create_by, create_time, update_by, update_time, create_user_id, update_user_id,template_id from kms_catalog
+    </sql>
+
+    <select id="selectKmsCatalogList" parameterType="KmsCatalog" resultMap="KmsCatalogResult">
+        <include refid="selectKmsCatalogVo"/>
+        <where>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="cover != null  and cover != ''"> and cover = #{cover}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+        </where>
+    </select>
+
+    <select id="selectKmsCatalogById" parameterType="Long" resultMap="KmsCatalogResult">
+        <include refid="selectKmsCatalogVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertKmsCatalog" parameterType="KmsCatalog">
+        insert into kms_catalog
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="title != null">title,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="sort != null">sort,</if>
+            <if test="description != null">description,</if>
+            <if test="cover != null">cover,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createUserId != null">create_user_id,</if>
+            <if test="updateUserId != null">update_user_id,</if>
+            <if test="templateId != null">template_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="title != null">#{title},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="description != null">#{description},</if>
+            <if test="cover != null">#{cover},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateby},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
+            <if test="templateId != null">#{templateId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKmsCatalog" parameterType="KmsCatalog">
+        update kms_catalog
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="cover != null">cover = #{cover},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createUserId != null">create_user_id = #{createUserId},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            <if test="templateId != null">template_id = #{templateId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteKmsCatalogById" parameterType="Long">
+        delete from kms_catalog where id = #{id}
+    </delete>
+
+    <delete id="deleteKmsCatalogByIds" parameterType="String">
+        delete from kms_catalog where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
