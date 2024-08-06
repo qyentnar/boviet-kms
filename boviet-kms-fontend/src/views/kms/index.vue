@@ -71,12 +71,12 @@
         <!--<el-table-column label="更新人" align="center" prop="updateBy" />-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
-                <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['kms:main:edit']" v-if="!scope.row.processInstanceId">编辑</el-button>
+                <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['kms:main:edit']" v-if="scope.row.state!=20">编辑</el-button>
                 <el-button size="mini" type="text" icon="el-icon-position" @click="handleStartProcess(scope.row)" v-hasPermi="['kms:main:start']" v-if="!scope.row.processInstanceId">发布</el-button>
-                <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleNewVersion(scope.row)" v-hasPermi="['kms:main:edit']" v-if="scope.row.state==='30'">新版本</el-button> -->
+                <el-button size="mini" type="text" icon="el-icon-edit" @click="handleNewVersion(scope.row)" v-hasPermi="['kms:main:edit']" v-if="scope.row.state==='20'">新版本</el-button>
                 <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['kms:main:remove']" v-if="!scope.row.processInstanceId">删除</el-button>
                 <el-button size="mini" type="text" icon="el-icon-preview" @click="handlePreviewAttFile(scope.row)" v-if="scope.row.fileName!=null">预览附件</el-button>
-                <!-- <el-button size="mini" type="text" icon="el-icon-preview" @click="handleView(scope.row)">查看详情</el-button> -->
+                <el-button size="mini" type="text" icon="el-icon-preview" @click="handleView(scope.row)">查看详情</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -140,7 +140,7 @@
                                     <el-descriptions-item label="知识正文"> {{form.mainContent}} </el-descriptions-item>
                                     <el-descriptions-item label="上传附件">
                                         <div v-if="form.fileName">
-                                            <el-tag type="plain" v-for="item in form.fileName.split(',')" :key="item">
+                                            <el-tag type="plain" style="margin-right: 10px;" v-for="item in form.fileName.split(',')" :key="item">
                                                 {{item}}
                                             </el-tag>
                                         </div>
@@ -156,8 +156,8 @@
             <el-col :span="24" align="center">
                 <el-button @click="prev" icon="el-icon-arrow-left" :disabled="active == 1">Previous</el-button>
                 <el-button @click="next" icon="el-icon-arrow-right" :disabled="active == 3">Next</el-button>
-                <el-button type="primary" @click="submitForm(1)" :disabled="active < 3 || loading">提交</el-button>
-                <el-button @click="submitForm(0)" v-if="form.state!=30" :disabled="active < 3">暂存</el-button>
+                <el-button type="primary" @click="submitForm(1)" :disabled="active < 3" :loading="loading">提交</el-button>
+                <el-button @click="submitForm(0)" v-if="form.state!=30" :disabled="active < 3" :loading="loading">暂存</el-button>
                 <el-button type="danger" @click="cancel">取 消</el-button>
             </el-col>
         </el-row>
@@ -243,7 +243,7 @@
                                     <el-descriptions-item label="知识正文"> {{form.mainContent}} </el-descriptions-item>
                                     <el-descriptions-item label="上传附件">
                                         <div v-if="form.fileName">
-                                            <el-tag type="plain" v-for="item in form.fileName.split(',')" :key="item">
+                                            <el-tag type="plain" style="margin-right: 10px;" v-for="item in form.fileName.split(',')" :key="item">
                                                 {{item}}
                                             </el-tag>
                                         </div>
@@ -259,8 +259,8 @@
             <el-col :span="24" align="center">
                 <el-button @click="prev" icon="el-icon-arrow-left" :disabled="active == 1">Previous</el-button>
                 <el-button @click="next" icon="el-icon-arrow-right" :disabled="active == 3">Next</el-button>
-                <el-button type="primary" @click="submitForm(3)">提交</el-button>
-                <el-button @click="submitForm(2)">暂存</el-button>
+                <el-button type="primary" @click="submitForm(3)" :disabled="active < 3 || loading == true">提交</el-button>
+                <el-button @click="submitForm(2)" v-if="form.state!=30" :disabled="active < 3 || loading == true">暂存</el-button>
                 <el-button type="danger" @click="cancel('new')">取 消</el-button>
             </el-col>
         </el-row>
@@ -530,15 +530,17 @@ export default {
                     check: false,
                     checkText: ''
                 }
-                const isNewVersion = this.form.isNewVersion
-                const version = this.form.version
-                if (isNewVersion === 0 && version > 1) {
-                    this.openNew = true;
-                    this.title = "修改知识新版本";
-                } else {
-                    this.open = true;
-                    this.title = "修改知识";
-                }
+                // const isNewVersion = this.form.isNewVersion
+                // const version = this.form.version
+                this.open = true;
+                this.title = "修改知识";
+                // if (isNewVersion === 0 && version > 1) {
+                //     this.openNew = true;
+                //     this.title = "修改知识新版本";
+                // } else {
+                //     this.open = true;
+                //     this.title = "修改知识";
+                // }
                 listCatalogExcludeChild(row.id).then(response => {
                     this.catalogOptions = this.handleTree(response.data, "id");
                 });
@@ -560,7 +562,6 @@ export default {
                 this.openNew = true;
                 this.title = "创建知识新版本";
                 this.form.currentVersionId = this.form.id
-                console.log(this.form.currentVersionId)
                 this.form.id = null
                 listCatalogExcludeChild(row.id).then(response => {
                     this.catalogOptions = this.handleTree(response.data, "id");
@@ -618,6 +619,7 @@ export default {
         },
         /** 提交按钮 */
         submitForm(oper) {
+            this.loading = true
             this.$refs["form"].validate(valid => {
                 if (valid) {
                     this.form.extAuthor = this.form.author.external || []
@@ -628,10 +630,12 @@ export default {
                     this.form.updateBy = null
                     this.form.updateUserId = null
                     if (this.form.id != null) {
+                        this.form.state = null
                         updateMain(this.form).then(response => {
                             this.$modal.msgSuccess("修改成功");
                             this.open = false;
                             this.openNew = false;
+                            this.loading = false;
                             this.getList();
                         });
                     } else {
@@ -639,6 +643,7 @@ export default {
                             this.$modal.msgSuccess("新增成功");
                             this.open = false;
                             this.openNew = false;
+                            this.loading = false;
                             this.getList();
                         });
                     }
@@ -666,6 +671,7 @@ export default {
             this.form.filePath = list
             this.form.fileName = names
             this.form.attMainIds = attMainIds
+            console.log(this.form)
         },
         /** 预览附件操作 */
         handlePreview(row) {
@@ -693,7 +699,7 @@ export default {
         /** 预览附件操作 new */
         handlePreviewAttFile(row) {
             this.reset();
-            const id = row.id || this.ids
+            const id = row.originId || this.ids
             previewAttFile(id).then(response => {
                 const previewData = response.data;
                 this.previewFile = []
@@ -734,7 +740,7 @@ export default {
             const id = row.id;
             //this.$router.push("/kms/view");
             this.$router.push({
-                name: 'kms-detail',
+                name: 'kms-info',
                 query: {
                     id: id
                 }

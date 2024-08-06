@@ -113,7 +113,7 @@
           <!--<el-input v-model="form.parentId" placeholder="请输入父目录" />-->
           <treeselect v-model="form.parentId" :options="catalogOptions" :normalizer="normalizer" placeholder="选择父目录" />
         </el-form-item>
-        <el-form-item label="关联流程">
+        <el-form-item label="关联流程" prop="templateId">
           <el-select v-model="form.templateId" placeholder="请选择流程模板">
             <el-option
               v-for="item in templateOptions"
@@ -185,6 +185,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        templateId: [
+          { required: true, message: "请选择流程模板", trigger: "change" }
+        ],
         title: [
           { 
             required: true, 
@@ -192,7 +195,7 @@ export default {
             trigger: 'blur' 
           },
           { 
-            pattern: /^(?!.*[-_]{2})[a-zA-Z0-9-_]+(?<![-_])$/, 
+            pattern: /^[\u4e00-\u9fa5a-zA-Z0-9-_]+$/, 
             message: '目录夹名称格式错误', 
             trigger: 'blur' 
           },

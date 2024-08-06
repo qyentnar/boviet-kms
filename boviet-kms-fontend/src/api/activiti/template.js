@@ -12,7 +12,7 @@ export function listTemplate(query) {
 // 查询流程模板详细
 export function getTemplate(id) {
   return request({
-    url: '/sys/activiti/template/' + id,
+    url: '/sys/activiti/template/getTemplate/' + id,
     method: 'get'
   })
 }
@@ -73,3 +73,12 @@ export function findAllNodes(key) {
     method: 'get'
   })
 }
+
+export function processHistory(key) {
+  return request({
+    url: '/sys/activiti/template/processHistory/' + key,
+    method: 'get'
+  })
+}
+
+

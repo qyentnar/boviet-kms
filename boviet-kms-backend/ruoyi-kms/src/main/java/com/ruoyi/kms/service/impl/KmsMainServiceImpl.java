@@ -1,6 +1,7 @@
 package com.ruoyi.kms.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.activiti.domain.SysActivitiTemplate;
-import com.ruoyi.activiti.mapper.SysActivitiTemplateMapper;
 import com.ruoyi.activiti.service.ISysActivitiTemplateService;
 import com.ruoyi.attachment.domain.SysAttMain;
 import com.ruoyi.attachment.mapper.SysAttMainMapper;
@@ -151,15 +151,6 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
         PageHelper.startPage(pageDomain.getPageNum(), pageDomain.getPageSize(), pageDomain.getOrderBy());
         
         List<KmsMainVo> kmsMains = kmsMainMapper.selectKmsMainList(kmsMain);
-        // LoginUser sysUser = SecurityUtils.getLoginUser();
-        // List<Task> tasks = taskService.createTaskQuery().taskAssignee(sysUser.getUsername()).list();
-        // for (Task task : tasks) {
-        //     KmsMainVo main = kmsMainMapper.selectKmsMainByProcessIntanceId(task.getProcessInstanceId());
-        //     if(main != null) {
-        //         kmsMains.add(main);
-        //     }
-        //  }
-        //List<KmsMainVo> kmsMainVos = new ArrayList<>();
         kmsMains.stream().forEach(item-> {
             // 作者
             List<KmsMainToAuthor> authorList = kmsMainToAuthorService.selectKmsMainToAuthorByKId(item.getId());
@@ -167,12 +158,59 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
             //KmsMainVo kmsMainVo = new KmsMainVo();
             //BeanUtils.copyProperties(item, kmsMainVo);
             item.setExtAuthor(authorNames);
-            //kmsMainVos.add(kmsMainVo);
         });
-        // kmsMains.sort((a,b) -> a.getId().compareTo(b.getId()));
         return kmsMains;
     }
 
+    /**
+     * 查询知识列表
+     *
+     * @param kmsMain 知识
+     * @return 知识
+     */
+    @SneakyThrows
+    @Override
+    public List<KmsMainVo> selectKmsMainListTemp(KmsMainDto kmsMain)
+    {
+        PageDomain pageDomain = TableSupport.getPageDomain();
+        PageHelper.startPage(pageDomain.getPageNum(), pageDomain.getPageSize(), pageDomain.getOrderBy());
+        
+        List<KmsMainVo> kmsMains = kmsMainMapper.selectKmsMainListTemp(kmsMain);
+        kmsMains.stream().forEach(item-> {
+            // 作者
+            List<KmsMainToAuthor> authorList = kmsMainToAuthorService.selectKmsMainToAuthorByKId(item.getId());
+            List<String> authorNames = authorList.stream().map(KmsMainToAuthor::getAuthorName).collect(toList());
+            //KmsMainVo kmsMainVo = new KmsMainVo();
+            //BeanUtils.copyProperties(item, kmsMainVo);
+            item.setExtAuthor(authorNames);
+        });
+        return kmsMains;
+    }
+
+    @Override
+    public List<KmsMainVo> selectKmsTaskRunning(String userName){
+        List<Task> tasks = new ArrayList<Task>();
+        if(userName.equalsIgnoreCase("admin")){
+            tasks = taskService.createTaskQuery().list();
+        }else{
+            tasks = taskService.createTaskQuery().taskAssignee(userName).list();
+        }
+        List<KmsMainVo> kmsMains = new ArrayList<KmsMainVo>();
+        for (Task task : tasks) {
+            KmsMainVo main = kmsMainMapper.selectKmsMainByProcessIntanceId(task.getProcessInstanceId());
+            if(main != null) {
+                kmsMains.add(main);
+            }
+         }
+         kmsMains.stream().forEach(item-> {
+            List<KmsMainToAuthor> authorList = kmsMainToAuthorService.selectKmsMainToAuthorByKId(item.getId());
+            List<String> authorNames = authorList.stream().map(KmsMainToAuthor::getAuthorName).collect(toList());
+            item.setExtAuthor(authorNames);
+        });
+         kmsMains.sort((a,b) -> a.getId().compareTo(b.getId()));
+         return kmsMains;
+
+    }
     /**
      * 新增知识
      *
@@ -197,6 +235,7 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
                 currentMain.setIsNewVersion(0);
                 KmsMain currentMainBean = new KmsMain();
                 BeanUtils.copyProperties(currentMain,currentMainBean);
+                currentMainBean.setState("30");
                 kmsMainMapper.updateKmsMain(currentMainBean);
             }else if(2==kmsMainDto.getOperation()){
                 kmsMainDto.setIsNewVersion(0);
@@ -217,7 +256,7 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
         }
         kmsMainDto.setVersion(version);
         int row = kmsMainMapper.insertKmsMain(kmsMainDto);
-        saveIndex(kmsMainDto);
+        this.saveIndex(kmsMainDto);
 
         //id这时还是空的 ：kmsMainDto.setOriginId(kmsMainDto.getId());
         if (kmsMainDto.getOriginId()==null) {
@@ -225,11 +264,14 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
             KmsMain kmsMain = new KmsMain();
             BeanUtils.copyProperties(kmsMainDto,kmsMain);
             kmsMainMapper.updateKmsMain(kmsMain); //普通暂存、提交 默认原始版本id为当前id
+
         }
 
         // 保存作者
         List<String> authors = kmsMainDto.getExtAuthor();
-        kmsMainToAuthorService.batchAdd(kmsMainDto.getId(),authors);
+        if(authors!= null && authors.size() > 0) {
+            kmsMainToAuthorService.batchAdd(kmsMainDto.getId(),authors);
+        }
 
         if(!StringUtils.isEmpty(kmsMainDto.getAttMainIds())){
             String[] attIds = kmsMainDto.getAttMainIds().split(",");
@@ -252,6 +294,7 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
         // KmsMain main = new KmsMain();
         // BeanUtils.copyProperties(kmsMainDto,main);
         // this.submitProcessApply(main);
+        this.startProcess(kmsMainDto.getId());
         return row;
     }
 
@@ -265,45 +308,16 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
     public int updateKmsMain(KmsMainDto kmsMainDto)
     {
         kmsMainDto.setUpdateTime(DateUtils.getNowDate());
-
-        KmsMainVo me = kmsMainMapper.selectKmsMainById(kmsMainDto.getId());
-        if("30".equals(me.getState())){
-
-        }else {
-            //新版本暂存或提交
-            if (1 < kmsMainDto.getOperation()) {
-                // 获取当前最新版本知识
-                KmsMainVo currentMain = kmsMainMapper.selectKmsMainById(kmsMainDto.getCurrentVersionId());
-                if (3 == kmsMainDto.getOperation()) {
-                    kmsMainDto.setIsNewVersion(1);
-                    kmsMainDto.setPublishDate(DateUtils.getNowDate());
-                    //当前版本置为非最新版本
-                    currentMain.setIsNewVersion(0);
-                    KmsMain currentMainBean = new KmsMain();
-                    BeanUtils.copyProperties(currentMain,currentMainBean);
-                    kmsMainMapper.updateKmsMain(currentMainBean);
-                } else if (2 == kmsMainDto.getOperation()) {
-                    kmsMainDto.setIsNewVersion(0);
-                }
-            } else {
-                if (0 == kmsMainDto.getOperation()) {
-                    kmsMainDto.setIsNewVersion(0);
-                } else if (1 == kmsMainDto.getOperation()) {
-                    kmsMainDto.setPublishDate(DateUtils.getNowDate());
-                    kmsMainDto.setIsNewVersion(1);
-                }
-            }
-        }
         // 保存作者
-        List<String> authors = kmsMainDto.getExtAuthor();
-        kmsMainToAuthorService.batchAdd(kmsMainDto.getId(),authors);
+        // List<String> authors = kmsMainDto.getExtAuthor();
+        // kmsMainToAuthorService.batchAdd(kmsMainDto.getId(),authors);
 
         KmsMain kmsMain = new KmsMain();
         BeanUtils.copyProperties(kmsMainDto,kmsMain);
         int row = kmsMainMapper.updateKmsMain(kmsMain);
 
         //更新es（暂时先注释）
-        updateIndex(kmsMain);
+        this.updateIndex(kmsMain);
 
         return row;
     }
@@ -356,7 +370,7 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
         int row = kmsMainMapper.updateKmsMain(kmsMain);
 
         //更新es（暂时先注释）
-        updateIndex(kmsMain);
+        this.updateIndex(kmsMain);
 
         return row;
     }
@@ -480,6 +494,8 @@ public class KmsMainServiceImpl  extends ServiceImpl<KmsMainMapper, KmsMain> imp
         JSONObject kmsMainObj = (JSONObject) JSONObject.toJSON(kmsMain);
         kmsMainObj.put("createTime",kmsMain.getCreateTime()!=null?kmsMain.getCreateTime().getTime():0L);
         kmsMainObj.put("publishDate",kmsMain.getPublishDate()!=null?kmsMain.getPublishDate().getTime():0L);
+        kmsMainObj.put("attExpirationTime",kmsMain.getAttExpirationTime()!=null?kmsMain.getAttExpirationTime().getTime():0L);
+        kmsMainObj.put("attCreateTime",kmsMain.getAttCreateTime()!=null?kmsMain.getAttCreateTime().getTime():0L);
         String updateIndex = "kms_index";
         UpdateRequest updateRequest = new UpdateRequest(updateIndex, kmsMain.getId().toString()).doc(kmsMainObj);
         updateRequest.docAsUpsert(true);

@@ -59,3 +59,10 @@ export function delCatalog(id) {
     method: 'delete'
   })
 }
+
+export function treeselect(){
+  return request({
+    url: '/kms/catalog//tree-select',
+    method: 'get'
+  })
+}

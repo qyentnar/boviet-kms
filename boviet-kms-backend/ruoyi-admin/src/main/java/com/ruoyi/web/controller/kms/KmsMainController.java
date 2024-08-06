@@ -19,6 +19,7 @@ import com.ruoyi.kms.service.IKmsMainService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
+
 /**
  * 知识Controller
  *
@@ -44,6 +45,25 @@ public class KmsMainController extends BaseController
         return getDataTable(list);
     }
 
+    /**
+     * 查询知识列表
+     */
+    @KmsScope
+    @GetMapping("/listTemp")
+    public TableDataInfo listTemp(KmsMainDto kmsMain)
+    {
+        startPage();
+        List<KmsMainVo> list = kmsMainService.selectKmsMainListTemp(kmsMain);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/listKmsTasks")
+    public TableDataInfo listKmsTasks() {
+        startPage();
+        List<KmsMainVo> list = kmsMainService.selectKmsTaskRunning(getUsername());
+        return getDataTable(list);
+    }
+    
     /**
      * 查询知识列表
      */

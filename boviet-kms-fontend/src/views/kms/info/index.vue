@@ -35,8 +35,8 @@
                                 <el-tag size="mini" type="info"><i class="el-icon-date" /> {{publishDate}}</el-tag>
                             </div>
                             <div class="document-action">
-                                <el-button type="primary" size="mini" @click="gotoView" icon="el-icon-view">View</el-button>
-                                <el-button type="primary" size="mini" @click="download" icon="el-icon-download">Download</el-button>
+                                <!-- <el-button type="primary" size="mini" @click="gotoView" icon="el-icon-view">View</el-button>
+                                <el-button type="primary" size="mini" @click="download" icon="el-icon-download">Download</el-button> -->
                             </div>
                         </div>
                     </el-col>
@@ -135,7 +135,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .el-row {
     margin-bottom: 20px;
 

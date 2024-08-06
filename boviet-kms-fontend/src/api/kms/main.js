@@ -9,6 +9,23 @@ export function listMain(query) {
   })
 }
 
+// 查询【请填写功能名称】列表
+export function listMainTemp(query) {
+  return request({
+    url: '/kms/main/listTemp',
+    method: 'get',
+    params: query
+  })
+}
+
+export function listKmsTasks(query) {
+  return request({
+    url: '/kms/main/listKmsTasks',
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询【请填写功能名称】详细
 export function getMain(id) {
   return request({

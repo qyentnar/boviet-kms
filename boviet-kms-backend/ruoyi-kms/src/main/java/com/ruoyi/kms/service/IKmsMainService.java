@@ -33,6 +33,21 @@ public interface IKmsMainService extends IService<KmsMain>
      */
     public List<KmsMainVo> selectKmsMainList(KmsMainDto kmsMain);
 
+        /**
+     * 查询知识列表
+     *
+     * @param kmsMain 知识
+     * @return 知识集合
+     */
+    public List<KmsMainVo> selectKmsMainListTemp(KmsMainDto kmsMain);
+
+    /**
+     * 
+     * @param sysUser
+     * @return
+     */
+    public List<KmsMainVo> selectKmsTaskRunning(String userName);
+
     /**
      * 新增知识
      *

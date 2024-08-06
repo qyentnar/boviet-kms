@@ -106,7 +106,38 @@ export const constantRoutes = [
         name: 'kms-detail',
         meta: { title: '知识详情', icon: 'set' }
       },
+      {
+        path: '/kms-info',
+        component: () => import('@/views/kms/info/index'),
+        name: 'kms-info',
+        hidden: true,
+        meta: { title: '知识信息', icon: 'set' }
+      },
     ]
+  },
+  {
+    path: '/kms/attachment/add',
+    component: () => import('@/views/kms/attachment/add'),
+    name: 'attachment-add',
+    hidden: true,
+  },
+  {
+    path: '/kms/attachment/edit',
+    component: () => import('@/views/kms/attachment/edit'),
+    name: 'attachment-edit',
+    hidden: true,
+  },
+  {
+    path: '/kms/attachment/new-version',
+    component: () => import('@/views/kms/attachment/newversion'),
+    name: 'attachment-newversion',
+    hidden: true,
+  },
+  {
+    path: '/kms/attachment/view',
+    component: () => import('@/views/kms/attachment/view'),
+    name: 'attachment-view',
+    hidden: true,
   },
   {
     path: '/kms-search',
@@ -114,12 +145,6 @@ export const constantRoutes = [
     hidden: true,
     name: 'kms-search',
     meta: { title: '知识库', icon: 'search' }
-  },
-  {
-    path: '/document-info',
-    component: () => import('@/views/kms/info/index'),
-    name: 'document-info',
-    hidden: true
   },
   {
     path: '/kms-view',

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.kms.mapper.KmsAreaMapper">
+    
+    <resultMap type="KmsArea" id="KmsAreaResult">
+        <result property="id"    column="id"    />
+        <result property="areaName"    column="area_name"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectKmsAreaVo">
+        select id, area_name, del_flag, create_by, create_time, update_by, update_time, remark from kms_area
+    </sql>
+
+    <select id="selectKmsAreaList" parameterType="KmsArea" resultMap="KmsAreaResult">
+        <include refid="selectKmsAreaVo"/>
+        <where>  
+            <if test="areaName != null  and areaName != ''"> and area_name like concat('%', #{areaName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectKmsAreaById" parameterType="Long" resultMap="KmsAreaResult">
+        <include refid="selectKmsAreaVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertKmsArea" parameterType="KmsArea" useGeneratedKeys="true" keyProperty="id">
+        insert into kms_area
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="areaName != null">area_name,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="areaName != null">#{areaName},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKmsArea" parameterType="KmsArea">
+        update kms_area
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="areaName != null">area_name = #{areaName},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteKmsAreaById" parameterType="Long">
+        delete from kms_area where id = #{id}
+    </delete>
+
+    <delete id="deleteKmsAreaByIds" parameterType="String">
+        delete from kms_area where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

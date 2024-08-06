@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.BaseEntity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -130,5 +132,94 @@ public class KmsMainVo extends BaseEntity
     private Long currentVersionId;
 
     private String processInstanceId;
+
+    /** 档案类型 */
+    @ApiModelProperty("档案类型")
+    private String attType;
+
+    /** 所属区域 */
+    @ApiModelProperty("所属区域")
+    private String area;
+
+    /** 归档人 */
+    @ApiModelProperty("归档人")
+    private String archiver;
+
+    /** 档案总称 */
+    @ApiModelProperty("档案总称")
+    private String generalName;
+
+    /** 档案编号 */
+    @ApiModelProperty("档案编号")
+    private String attCode;
+
+    /** 历史档案编号 */
+    @ApiModelProperty("历史档案编号")
+    private String attCodeH;
+
+    /** 资料形成日期 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("资料形成日期")
+    private Date attCreateTime;
+
+    /** 保管期限 */
+    @ApiModelProperty("保管期限")
+    private Long storageTime;
+
+    /** 档案有效期 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("档案有效期")
+    private Date attExpirationTime;
+
+    /**  箱号  */
+    @ApiModelProperty(" 箱号 ")
+    private String boxNo;
+
+    /**  盒号  */
+    @ApiModelProperty(" 盒号 ")
+    private String boxesNo;
+
+    /** 案卷号 */
+    @ApiModelProperty("案卷号")
+    private String attNumber;
+
+    /** 目录号 */
+    @ApiModelProperty("目录号")
+    private String catalogNumber;
+
+    /** 卷内序号 */
+    @ApiModelProperty("卷内序号")
+    private String attSerialNumber;
+
+    /** 密级程度（1：秘密，2：机密，3：绝密） */
+    @ApiModelProperty("密级程度")
+    private Long attClassification;
+
+    /** 件数/本 */
+    @ApiModelProperty("件数/本")
+    private String attCount;
+
+    /** 页数/页码 */
+    @ApiModelProperty("页数/页码")
+    private String pageNumber;
+
+    /** 保管单位 */
+    @ApiModelProperty("保管单位")
+    private String custodyUnit;
+
+    /** 外部相关单位 */
+    @ApiModelProperty("外部相关单位")
+    private String externalUnit;
+
+    /** 移交档案部门 */
+    @ApiModelProperty("移交档案部门")
+    private String filingDept;
+
+    /** 备注 */
+    @ApiModelProperty("备注")
+    private String marks;
+
+    /** 删除标志（0代表存在 2代表删除） */
+    private String delFlag;
 
 }

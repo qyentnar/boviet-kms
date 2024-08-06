@@ -1,13 +1,16 @@
 package com.ruoyi.activiti.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.activiti.domain.SysActivitiTemplate;
@@ -16,7 +19,6 @@ import com.ruoyi.activiti.dto.SysActivitiTemplateDto;
 import com.ruoyi.common.utils.DateUtils;
 
 import org.activiti.bpmn.converter.BpmnXMLConverter;
-import org.activiti.bpmn.converter.util.InputStreamProvider;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.engine.*;
@@ -28,6 +30,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.activiti.bpmn.model.Process;
+import org.activiti.bpmn.model.SequenceFlow;
+import org.activiti.bpmn.model.UserTask;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,7 +119,7 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
         String xml = sysActivitiTemplate.getProcessDefXml();
 
         XMLInputFactory factory = XMLInputFactory.newInstance();
-            
+
         BpmnXMLConverter bpmnXMLConverter = new BpmnXMLConverter();
         XMLStreamReader reader = null;
         try {
@@ -126,23 +130,29 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
         BpmnModel bpmnModel = bpmnXMLConverter.convertToBpmnModel(reader);
         Process process = bpmnModel.getMainProcess();
         Collection<FlowElement> flowElements = process.getFlowElements();
-        Long startEvent = flowElements.stream().filter(flowElement -> flowElement.getClass().getSimpleName().equals("StartEvent")).count();
-        if(startEvent != 1){
+        Long startEvent = flowElements.stream()
+                .filter(flowElement -> flowElement.getClass().getSimpleName().equals("StartEvent")).count();
+        if (startEvent != 1) {
             throw new RuntimeException("There must be at least one StartEvent and no more than two StartEvent");
         }
-        Long endEvent = flowElements.stream().filter(flowElement -> flowElement.getClass().getSimpleName().equals("EndEvent")).count();
-        if(endEvent != 1){
+        Long endEvent = flowElements.stream()
+                .filter(flowElement -> flowElement.getClass().getSimpleName().equals("EndEvent")).count();
+        if (endEvent != 1) {
             throw new RuntimeException("There must be at least one EndEvent and no more than two EndEvent");
         }
-
-        Long UserTaskNull = flowElements.stream().filter(flowElement -> flowElement.getClass().getSimpleName().equals("UserTask") && (flowElement.getName() == null || flowElement.getName().isEmpty())).count();
-        if(UserTaskNull > 0){
-            throw new RuntimeException("UserTask name is not null");
+        for (FlowElement flowElement : flowElements) {
+            if (flowElement instanceof UserTask) {
+                UserTask userTask = (UserTask) flowElement;
+                if (userTask.getAssignee() == null || userTask.getAssignee().isEmpty()) {
+                    throw new RuntimeException("UserTask not assigned yet");
+                }
+            }
         }
 
         ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
         RepositoryService repositoryService = processEngine.getRepositoryService();
-        Deployment deployment = repositoryService.createDeployment().addString("key_" + templateId + ".bpmn20.xml", xml)
+        Deployment deployment = repositoryService.createDeployment()
+                .addString("key_" + templateId + ".bpmn20.xml", xml)
                 .name(templateName).deploy();
         return deployment;
     }
@@ -303,7 +313,12 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
                 System.out.println(hi.getProcessInstanceId());
                 System.out.println("============================");
                 Map<String, Object> map = new HashMap<>();
-                map.put("fdEndTime", hi.getEndTime());
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String endTime = format.format(hi.getEndTime());
+                map.put("fdEndTime", endTime);
+                map.put("completed", true);
+                map.put("key", hi.getActivityId());
+                map.put("class", hi.getActivityType());
                 if ("StartEvent".equals(hi.getActivityName())) {
                     map.put("fdActivityName", "开始节点");
                     map.put("fdAssignee", "系统");
@@ -375,5 +390,100 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
             results.add(map);
         }
         return results;
+    }
+
+    public List<Map<String, Object>> findAllTasks() {
+        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+        TaskService taskService = processEngine.getTaskService();
+        List<Task> taskList = taskService.createTaskQuery().list();
+
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Task task : taskList) {
+            System.out.println("流程实例ID:" + task.getProcessInstanceId());
+            System.out.println("任务ID:" + task.getId());
+            System.out.println("任务Name:" + task.getName());
+            System.out.println("提交人:" + task.getAssignee());
+            Map<String, Object> map = new HashMap<>();
+            map.put("processInstanceId", task.getProcessInstanceId());
+            map.put("taskId", task.getId());
+            map.put("taskName", task.getName());
+            map.put("assignee", task.getAssignee());
+            list.add(map);
+        }
+        return list;
+    }
+
+    @Override
+    public List<Map<String, Object>> processHistory(String processInstanceId) {
+        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+        // Lấy RepositoryService
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+
+        ProcessInstance processInstance = getProcessInstanceByProcessInstanceId(processInstanceId);
+        String processDefinitionId = processInstance.getProcessDefinitionId();
+        // Lấy ProcessDefinition từ key của quy trình
+        ProcessDefinition processDefinition = repositoryService.getProcessDefinition(processDefinitionId);
+
+        // Lấy mô hình BPMN của quy trình
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
+
+        // Lấy quy trình từ mô hình BPMN
+        Process process = bpmnModel.getMainProcess();
+
+        // Lấy danh sách các tác vụ hiện tại
+        List<Task> tasks = taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .list();
+
+        // Tạo một Map để lưu trữ các phần tử tiếp theo
+        Map<String, FlowElement> elementMap = new HashMap<>();
+        for (FlowElement element : process.getFlowElements()) {
+            elementMap.put(element.getId(), element);
+        }
+
+        List<Map<String, Object>> historyList = findHistory(processInstanceId);
+        Map<String, Object> map = new HashMap<>();
+        // Duyệt qua tất cả các tác vụ hiện tại để xác định nút tiếp theo
+        for (Task task : tasks) {
+            // String currentTaskId = task.getTaskDefinitionKey();
+            // // Tìm các phần tử tiếp theo từ nút hiện tại
+            // for (SequenceFlow sequenceFlow : process.getFlowElements().stream()
+            //         .filter(e -> e instanceof SequenceFlow)
+            //         .map(e -> (SequenceFlow) e)
+            //         .collect(Collectors.toList())) {
+            //     // Kiểm tra xem SequenceFlow có nối với nút hiện tại không
+            //     if (sequenceFlow.getSourceRef().equals(currentTaskId)) {
+            //         String targetId = sequenceFlow.getTargetRef();
+            //         FlowElement nextElement = elementMap.get(targetId);
+
+            //         if (nextElement != null && nextElement instanceof UserTask) {
+            //             UserTask userTask = (UserTask) nextElement;
+            //             map.put("fdAssignee", userTask.getAssignee());
+            //             map.put("fdActivityName", userTask.getName());
+            //             map.put("completed", false);
+            //             map.put("key", userTask.getId());
+            //             for (Map<String,Object> history : historyList) {
+            //                 if(history.get("class").toString().equalsIgnoreCase("usertask")){
+            //                     historyList.add(map);
+            //                     break;
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+
+            map.put("fdAssignee", task.getAssignee());
+            map.put("fdActivityName", task.getName());
+            map.put("completed", false);
+            map.put("key", task.getTaskDefinitionKey());
+            historyList.add(map);
+        }
+        return historyList;
+    }
+
+    @Override
+    public SysActivitiTemplate getTemplate(Long id){
+        SysActivitiTemplate sysActivitiTemplate = selectSysActivitiTemplateById(id);
+        return sysActivitiTemplate;
     }
 }

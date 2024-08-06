@@ -73,4 +73,10 @@ public interface ISysActivitiTemplateService
     public List<Map<String,Object>> findHistory(String processInstanceId);
 
     public List<Map<String, Object>> findAllNodes(String processInstanceId);
+
+    public List<Map<String, Object>> findAllTasks();
+
+    public List<Map<String,Object>> processHistory(String processInstanceId);
+
+    public SysActivitiTemplate getTemplate(Long id);
 }

@@ -63,6 +63,9 @@ import Process from "@/components/Process/index.js";
 Vue.use(Process);
 import "@/components/Process/theme/index.scss";
 
+import VueQrcodeReader from "vue-qrcode-reader";
+Vue.use(VueQrcodeReader);
+
 //import "@/package/theme/element-variables.scss";
 
 // 全局方法挂载

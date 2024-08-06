@@ -26,6 +26,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
+
+
 /**
  * 流程模板Controller
  *
@@ -136,5 +138,21 @@ public class SysActivitiTemplateController extends BaseController
     public AjaxResult findAllNodes(@PathVariable("processInstanceId") String processInstanceId) {
         return AjaxResult.success(sysActivitiTemplateService.findAllNodes(processInstanceId));
     }
+
+    @GetMapping("/findAllTasks")
+    public AjaxResult findAllTasks() {
+        return AjaxResult.success(sysActivitiTemplateService.findAllTasks());
+    }
+
+    @GetMapping("/processHistory/{processInstanceId}")
+    public AjaxResult processHistory(@PathVariable("processInstanceId") String processInstanceId) {
+        return AjaxResult.success(sysActivitiTemplateService.processHistory(processInstanceId));
+    }
+    
+    @GetMapping("/getTemplate/{id}")
+    public AjaxResult getTemplate(@PathVariable("id") Long id) {
+        return AjaxResult.success(sysActivitiTemplateService.getTemplate(id));
+    }
+    
     
 }

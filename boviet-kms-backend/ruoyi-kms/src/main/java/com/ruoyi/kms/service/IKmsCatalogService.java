@@ -1,7 +1,11 @@
 package com.ruoyi.kms.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.kms.domain.KmsCatalog;
+import com.ruoyi.kms.dto.KmsTreeSelect;
 
 /**
  * 【请填写功能名称】Service接口
@@ -58,4 +62,9 @@ public interface IKmsCatalogService
      * @return 结果
      */
     public int deleteKmsCatalogById(Long id);
+
+
+    public List<KmsTreeSelect> buildCatalogTreeSelect(List<KmsCatalog> catalogs);
+
+    public List<KmsCatalog> buildCatalogTree(List<KmsCatalog> catalogs);
 }

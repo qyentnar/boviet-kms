@@ -22,6 +22,7 @@ import com.ruoyi.kms.service.IKmsCatalogService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 
+
 /**
  * 【请填写功能名称】Controller
  *
@@ -135,4 +136,11 @@ public class KmsCatalogController extends BaseController
     {
         return toAjax(kmsCatalogService.deleteKmsCatalogByIds(ids));
     }
+
+    @GetMapping("/tree-select")
+    public AjaxResult treeSelect(KmsCatalog catalog) {
+        List<KmsCatalog> list = kmsCatalogService.selectKmsCatalogList(catalog);
+        return AjaxResult.success(kmsCatalogService.buildCatalogTreeSelect(list)); //
+    }
+    
 }

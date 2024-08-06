@@ -48,6 +48,14 @@ public interface KmsMainMapper extends BaseMapper<KmsMain>
      */
     public List<KmsMainVo> selectKmsMainList(KmsMainDto kmsMain);
 
+        /**
+     * 查询【请填写功能名称】列表
+     *
+     * @param kmsMain 【请填写功能名称】
+     * @return 【请填写功能名称】集合
+     */
+    public List<KmsMainVo> selectKmsMainListTemp(KmsMainDto kmsMain);
+
     /**
      * 新增【请填写功能名称】
      *

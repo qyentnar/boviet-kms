@@ -27,6 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectKmsCatalogList" parameterType="KmsCatalog" resultMap="KmsCatalogResult">
         <include refid="selectKmsCatalogVo"/>
         <where>
+            <if test="id != null and id != ''">and id = #{id}</if>
             <if test="title != null  and title != ''"> and title = #{title}</if>
             <if test="parentId != null "> and parent_id = #{parentId}</if>
             <if test="sort != null "> and sort = #{sort}</if>

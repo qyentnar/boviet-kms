@@ -1,80 +1,128 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.kms.mapper.KmsMainMapper">
 
     <resultMap type="com.ruoyi.kms.vo.KmsMainVo" id="KmsMainResult">
-        <result property="id"    column="id"    />
-        <result property="title"    column="title"    />
-        <result property="catalogId"    column="catalog_id"    />
-        <result property="deptId"    column="dept_id"    />
-        <result property="mainContent"    column="main_content"    />
-        <result property="summary"    column="summary"    />
-        <result property="keyword"    column="keyword"    />
-        <result property="coverImg"    column="cover_img"    />
-        <result property="version"    column="version"    />
-        <result property="originId" column="origin_id"    />
-        <result property="isNewVersion" column="is_new_version"    />
-        <result property="state"    column="state"    />
-        <result property="publishDate"    column="publish_date"    />
-        <result property="readCount"    column="read_count"    />
-        <result property="filePath"    column="file_path"    />
-        <result property="fileName"    column="file_name"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="createUserId"    column="create_user_id"    />
-        <result property="updateUserId"    column="update_user_id"    />
-        <result property="processInstanceId"    column="process_instance_id"    />
+        <result property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="catalogId" column="catalog_id" />
+        <result property="deptId" column="dept_id" />
+        <result property="mainContent" column="main_content" />
+        <result property="summary" column="summary" />
+        <result property="keyword" column="keyword" />
+        <result property="coverImg" column="cover_img" />
+        <result property="version" column="version" />
+        <result property="originId" column="origin_id" />
+        <result property="isNewVersion" column="is_new_version" />
+        <result property="state" column="state" />
+        <result property="publishDate" column="publish_date" />
+        <result property="readCount" column="read_count" />
+        <result property="fileName" column="file_name" />
+        <result property="attType" column="att_type" />
+        <result property="area" column="area" />
+        <result property="archiver" column="archiver" />
+        <result property="generalName" column="general_name" />
+        <result property="attCode" column="att_code" />
+        <result property="attCodeH" column="att_code_h" />
+        <result property="attCreateTime" column="att_create_time" />
+        <result property="storageTime" column="storage_time" />
+        <result property="attExpirationTime" column="att_expiration_time" />
+        <result property="boxNo" column="box_no" />
+        <result property="boxesNo" column="boxes_no" />
+        <result property="attNumber" column="att_number" />
+        <result property="catalogNumber" column="catalog_number" />
+        <result property="attSerialNumber" column="att_serial_number" />
+        <result property="attClassification" column="att_classification" />
+        <result property="attCount" column="att_count" />
+        <result property="pageNumber" column="page_number" />
+        <result property="custodyUnit" column="custody_unit" />
+        <result property="externalUnit" column="external_unit" />
+        <result property="filingDept" column="filing_dept" />
+        <result property="marks" column="marks" />
+        <result property="filePath" column="file_path" />
+        <result property="createUserId" column="create_user_id" />
+        <result property="updateUserId" column="update_user_id" />
+        <result property="processInstanceId" column="process_instance_id" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="delFlag"    column="del_flag"    />
     </resultMap>
 
-    <sql id="selectKmsMainVo">
-        select id, title, catalog_id, dept_id, main_content, summary, keyword, cover_img, version,origin_id, is_new_version, state, publish_date, read_count, file_path, file_name, create_by, create_time, update_by, update_time, create_user_id, update_user_id,process_instance_id from kms_main
-    </sql>
+    <sql id="selectKmsMainVo"> select id, title, catalog_id, dept_id, main_content, summary,
+        keyword, cover_img, version, origin_id, is_new_version, state, publish_date, read_count,
+        file_name, att_type, area, archiver, general_name, att_code, att_code_h,
+        att_create_time, storage_time, att_expiration_time, box_no, boxes_no, att_number, catalog_number
+        att_serial_number, att_classification, att_count, page_number, custody_unit, external_unit,
+        filing_dept, marks, file_path, create_user_id, update_user_id, process_instance_id,
+        create_by, create_time, update_by, update_time, del_flag from kms_main </sql>
 
-    <select id="selectKmsMainList" parameterType="com.ruoyi.kms.dto.KmsMainDto" resultMap="KmsMainResult">
-        <include refid="selectKmsMainVo"/>
+    <select id="selectKmsMainListTemp" parameterType="com.ruoyi.kms.dto.KmsMainDto" resultMap="KmsMainResult">
+        <include refid="selectKmsMainVo" />
         <where>
-            ((is_new_version = 1 AND state IN ('30')) OR (state not in ('30') AND is_new_version = 0))
-            <if test="title != null  and title != ''"> and title = #{title}</if>
-            <if test="catalogId != null "> and catalog_id = #{catalogId}</if>
-            <if test="deptId != null "> and dept_id = #{deptId}</if>
-            <if test="mainContent != null  and mainContent != ''"> and main_content = #{mainContent}</if>
-            <if test="summary != null  and summary != ''"> and summary = #{summary}</if>
-            <if test="keyword != null  and keyword != ''"> and keyword = #{keyword}</if>
-            <if test="coverImg != null  and coverImg != ''"> and cover_img = #{coverImg}</if>
-            <if test="version != null "> and version = #{version}</if>
-            <if test="state != null  and state != ''"> and state = #{state}</if>
-            <if test="publishDate != null "> and publish_date = #{publishDate}</if>
-            <if test="readCount != null "> and read_count = #{readCount}</if>
-            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
-            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
-            <!-- 数据范围过滤 -->
+            del_flag = 0 and state = 10 and ((is_new_version = 1 AND state IN ('30')) OR (state not in ('30') AND is_new_version = 0))
             ${params.dataScope}
         </where>
     </select>
 
+    <select id="selectKmsMainList" parameterType="com.ruoyi.kms.dto.KmsMainDto"
+        resultMap="KmsMainResult">
+        <include refid="selectKmsMainVo" />
+        <where> del_flag = 0 and state != 10 and ((is_new_version = 1 AND state IN ('30')) OR (state not in ('30') AND is_new_version = 0)) 
+        <if test="title != null  and title != ''"> and title = #{title}</if>
+        <if test="catalogId != null "> and catalog_id = #{catalogId}</if>
+        <if test="deptId != null "> and dept_id = #{deptId}</if>
+        <if test="mainContent != null  and mainContent != ''"> and main_content = #{mainContent}</if>
+        <if test="summary != null  and summary != ''"> and summary = #{summary}</if>
+        <if test="keyword != null  and keyword != ''"> and keyword = #{keyword}</if>
+        <if test="coverImg != null  and coverImg != ''"> and cover_img = #{coverImg}</if>
+        <if test="version != null "> and version = #{version}</if>
+        <if test="originId != null "> and origin_id = #{originId}</if>
+        <if test="isNewVersion != null "> and is_new_version = #{isNewVersion}</if>
+        <if test="state != null  and state != ''"> and state = #{state}</if>
+        <if test="publishDate != null "> and publish_date = #{publishDate}</if>
+        <if test="readCount != null "> and read_count = #{readCount}</if>
+        <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+        <if test="attType != null "> and att_type = #{attType}</if>
+        <if test="area != null "> and area = #{area}</if>
+        <if test="archiver != null  and archiver != ''"> and archiver = #{archiver}</if>
+        <if test="generalName != null  and generalName != ''"> and general_name like concat('%', #{generalName}, '%')</if>
+        <if test="attCode != null  and attCode != ''"> and att_code = #{attCode}</if>
+        <if test="attCodeH != null  and attCodeH != ''"> and att_code_h = #{attCodeH}</if>
+        <if test="attCreateTime != null "> and att_create_time = #{attCreateTime}</if>
+        <if test="storageTime != null "> and storage_time = #{storageTime}</if>
+        <if test="attExpirationTime != null "> and att_expiration_time = #{attExpirationTime}</if>
+        <if test="boxNo != null  and boxNo != ''"> and box_no = #{boxNo}</if>
+        <if test="boxesNo != null  and boxesNo != ''"> and boxes_no = #{boxesNo}</if>
+        <if test="attNumber != null  and attNumber != ''"> and att_number = #{attNumber}</if>
+        <if test="catalogNumber != null  and catalogNumber != ''"> and catalog_number = #{catalogNumber}</if>
+        <if test="attSerialNumber != null  and attSerialNumber != ''"> and att_serial_number = #{attSerialNumber}</if>
+        <if test="attClassification != null "> and att_classification = #{attClassification}</if>
+        <if test="attCount != null  and attCount != ''"> and att_count = #{attCount}</if>
+        <if test="pageNumber != null "> and page_number = #{pageNumber}</if>
+        <if test="custodyUnit != null "> and custody_unit = #{custodyUnit}</if>
+        <if test="externalUnit != null  and externalUnit != ''"> and external_unit = #{externalUnit}</if>
+        <if test="filingDept != null  and filingDept != ''"> and filing_dept = #{filingDept}</if>
+            <!-- 数据范围过滤 -->
+        ${params.dataScope} </where>
+    </select>
+
     <select id="selectKmsMainById" parameterType="Long" resultMap="KmsMainResult">
-        <include refid="selectKmsMainVo"/>
-        where id = #{id}
+        <include refid="selectKmsMainVo" /> where id = #{id} and del_flag = 0
     </select>
 
     <select id="selectKmsMainByUserId" parameterType="Long" resultMap="KmsMainResult">
-        <include refid="selectKmsMainVo"/>
-        where createUserId = #{userId}
+        <include refid="selectKmsMainVo" /> where createUserId = #{userId} and del_flag = 0
     </select>
 
     <select id="selectKmsMainByProcessIntanceId" parameterType="String" resultMap="KmsMainResult">
-        <include refid="selectKmsMainVo"/>
-        where process_instance_id = #{processInstanceId}
+        <include refid="selectKmsMainVo" /> where process_instance_id = #{processInstanceId} and del_flag = 0
     </select>
 
-    <insert id="insertKmsMain" keyProperty="id" useGeneratedKeys="true" parameterType="com.ruoyi.kms.dto.KmsMainDto">
-        insert into kms_main
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">id,</if>
+    <insert id="insertKmsMain" keyProperty="id" useGeneratedKeys="true"
+        parameterType="com.ruoyi.kms.dto.KmsMainDto"> insert into kms_main <trim prefix="("
+            suffix=")" suffixOverrides=",">
             <if test="title != null">title,</if>
             <if test="catalogId != null">catalog_id,</if>
             <if test="deptId != null">dept_id,</if>
@@ -83,22 +131,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="keyword != null">keyword,</if>
             <if test="coverImg != null">cover_img,</if>
             <if test="version != null">version,</if>
-            <if test="originId!= null">origin_id,</if>
+            <if test="originId != null">origin_id,</if>
             <if test="isNewVersion != null">is_new_version,</if>
             <if test="state != null">state,</if>
             <if test="publishDate != null">publish_date,</if>
             <if test="readCount != null">read_count,</if>
-            <if test="filePath != null">file_path,</if>
             <if test="fileName != null">file_name,</if>
+            <if test="attType != null">att_type,</if>
+            <if test="area != null">area,</if>
+            <if test="archiver != null">archiver,</if>
+            <if test="generalName != null">general_name,</if>
+            <if test="attCode != null">att_code,</if>
+            <if test="attCodeH != null">att_code_h,</if>
+            <if test="attCreateTime != null">att_create_time,</if>
+            <if test="storageTime != null">storage_time,</if>
+            <if test="attExpirationTime != null">att_expiration_time,</if>
+            <if test="boxNo != null">box_no,</if>
+            <if test="boxesNo != null">boxes_no,</if>
+            <if test="attNumber != null">att_number,</if>
+            <if test="catalogNumber != null">catalog_number,</if>
+            <if test="attSerialNumber != null">att_serial_number,</if>
+            <if test="attClassification != null">att_classification,</if>
+            <if test="attCount != null">att_count,</if>
+            <if test="pageNumber != null">page_number,</if>
+            <if test="custodyUnit != null">custody_unit,</if>
+            <if test="externalUnit != null">external_unit,</if>
+            <if test="filingDept != null">filing_dept,</if>
+            <if test="marks != null">marks,</if>
+            <if test="filePath != null">file_path,</if>
+            <if test="createUserId != null">create_user_id,</if>
+            <if test="updateUserId != null">update_user_id,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="updateTime != null">update_time,</if>
-            <if test="createUserId != null">create_user_id,</if>
-            <if test="updateUserId != null">update_user_id,</if>
-         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">#{id},</if>
+        </trim>
+        <trim
+            prefix="values (" suffix=")" suffixOverrides=",">
             <if test="title != null">#{title},</if>
             <if test="catalogId != null">#{catalogId},</if>
             <if test="deptId != null">#{deptId},</if>
@@ -107,25 +176,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="keyword != null">#{keyword},</if>
             <if test="coverImg != null">#{coverImg},</if>
             <if test="version != null">#{version},</if>
-            <if test="originId!= null">#{originId},</if>
+            <if test="originId != null">#{originId},</if>
             <if test="isNewVersion != null">#{isNewVersion},</if>
             <if test="state != null">#{state},</if>
             <if test="publishDate != null">#{publishDate},</if>
             <if test="readCount != null">#{readCount},</if>
-            <if test="filePath != null">#{filePath},</if>
             <if test="fileName != null">#{fileName},</if>
+            <if test="attType != null">#{attType},</if>
+            <if test="area != null">#{area},</if>
+            <if test="archiver != null">#{archiver},</if>
+            <if test="generalName != null">#{generalName},</if>
+            <if test="attCode != null">#{attCode},</if>
+            <if test="attCodeH != null">#{attCodeH},</if>
+            <if test="attCreateTime != null">#{attCreateTime},</if>
+            <if test="storageTime != null">#{storageTime},</if>
+            <if test="attExpirationTime != null">#{attExpirationTime},</if>
+            <if test="boxNo != null">#{boxNo},</if>
+            <if test="boxesNo != null">#{boxesNo},</if>
+            <if test="attNumber != null">#{attNumber},</if>
+            <if test="attSerialNumber != null">#{attSerialNumber},</if>
+            <if test="catalogNumber != null">#{catalogNumber},</if>
+            <if test="attClassification != null">#{attClassification},</if>
+            <if test="attCount != null">#{attCount},</if>
+            <if test="pageNumber != null">#{pageNumber},</if>
+            <if test="custodyUnit != null">#{custodyUnit},</if>
+            <if test="externalUnit != null">#{externalUnit},</if>
+            <if test="filingDept != null">#{filingDept},</if>
+            <if test="marks != null">#{marks},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+            <if test="updateUserId != null">#{updateUserId},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
-            <if test="createUserId != null">#{createUserId},</if>
-            <if test="updateUserId != null">#{updateUserId},</if>
-         </trim>
+        </trim>
     </insert>
 
-    <update id="updateKmsMain" parameterType="KmsMain">
-        update kms_main
-        <trim prefix="SET" suffixOverrides=",">
+    <update id="updateKmsMain" parameterType="KmsMain"> update kms_main <trim prefix="SET"
+            suffixOverrides=",">
             <if test="title != null">title = #{title},</if>
             <if test="catalogId != null">catalog_id = #{catalogId},</if>
             <if test="deptId != null">dept_id = #{deptId},</if>
@@ -134,44 +223,63 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="keyword != null">keyword = #{keyword},</if>
             <if test="coverImg != null">cover_img = #{coverImg},</if>
             <if test="version != null">version = #{version},</if>
-            <if test="originId!= null">origin_id = #{originId},</if>
+            <if test="originId != null">origin_id = #{originId},</if>
             <if test="isNewVersion != null">is_new_version = #{isNewVersion},</if>
             <if test="state != null">state = #{state},</if>
             <if test="publishDate != null">publish_date = #{publishDate},</if>
             <if test="readCount != null">read_count = #{readCount},</if>
-            <if test="filePath != null">file_path = #{filePath},</if>
             <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="attType != null">att_type = #{attType},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="archiver != null">archiver = #{archiver},</if>
+            <if test="generalName != null">general_name = #{generalName},</if>
+            <if test="attCode != null">att_code = #{attCode},</if>
+            <if test="attCodeH != null">att_code_h = #{attCodeH},</if>
+            <if test="attCreateTime != null">att_create_time = #{attCreateTime},</if>
+            <if test="storageTime != null">storage_time = #{storageTime},</if>
+            <if test="attExpirationTime != null">att_expiration_time = #{attExpirationTime},</if>
+            <if test="boxNo != null">box_no = #{boxNo},</if>
+            <if test="boxesNo != null">boxes_no = #{boxesNo},</if>
+            <if test="attNumber != null">att_number = #{attNumber},</if>
+            <if test="catalogNumber != null">catalog_number = #{catalogNumber},</if>
+            <if test="attSerialNumber != null">att_serial_number = #{attSerialNumber},</if>
+            <if test="attClassification != null">att_classification = #{attClassification},</if>
+            <if test="attCount != null">att_count = #{attCount},</if>
+            <if test="pageNumber != null">page_number = #{pageNumber},</if>
+            <if test="custodyUnit != null">custody_unit = #{custodyUnit},</if>
+            <if test="externalUnit != null">external_unit = #{externalUnit},</if>
+            <if test="filingDept != null">filing_dept = #{filingDept},</if>
+            <if test="marks != null">marks = #{marks},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="createUserId != null">create_user_id = #{createUserId},</if>
+            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            <if test="processInstanceId != null">process_instance_id = #{processInstanceId},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="createUserId != null">create_user_id = #{createUserId},</if>
-            <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
-            <if test="processInstanceId != null">process_instance_id = #{processInstanceId},</if>
         </trim>
-        where id = #{id}
-    </update>
+        where id = #{id} </update>
 
-    <delete id="deleteKmsMainById" parameterType="Long">
-        delete from kms_main where id = #{id}
+    <delete id="deleteKmsMainById" parameterType="Long"> 
+        update kms_main set del_flag = 1 where id = #{id} 
     </delete>
 
-    <delete id="deleteKmsMainByIds" parameterType="String">
-        delete from kms_main where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
+    <delete id="deleteKmsMainByIds" parameterType="String"> 
+        update kms_main set del_flag = 1 where id in 
+        <foreach
+            item="id" collection="array" open="(" separator="," close=")"> #{id} 
         </foreach>
     </delete>
 
-    <insert id="bachAddMainReaders" parameterType="com.ruoyi.kms.dto.KmsMainUserDto">
-        INSERT INTO kms_main_reader(know_id, user_id)
-        values
-        <foreach collection="userList" separator="," item="userDto" index="index">
-            (#{userDto.knowId},#{userDto.userId})
+    <insert id="bachAddMainReaders" parameterType="com.ruoyi.kms.dto.KmsMainUserDto"> 
+        INSERT INTO kms_main_reader(know_id, user_id) values 
+        <foreach collection="userList" separator=","
+            item="userDto" index="index"> (#{userDto.knowId},#{userDto.userId}) 
         </foreach>
     </insert>
 
-    <select id="selectUserIdsByParam" resultType="String">
-        SELECT user_id FROM kms_main_reader WHERE know_id = #{knowId}
+    <select id="selectUserIdsByParam" resultType="String"> 
+        SELECT user_id FROM kms_main_reader WHERE know_id = #{knowId} 
     </select>
 </mapper>
