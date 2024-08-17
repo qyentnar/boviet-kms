@@ -1,18 +1,22 @@
 <template>
     <div class="abstract-group">
-        <el-checkbox-group v-model="abstract" class="abstract-checkbox-group" @change="changeCheckAll"
-                           v-if="abstractList.length>0 && checkbox">
-            <el-checkbox class="abstract-checkbox" v-for="(item,index) of abstractList" :key="index" :label="item">
-                <abstract-item :abstract="item" :searchSimilar="searchSimilar" :showCollect="showCollect"
-                               @open-collect="openCollect" :from="from"></abstract-item>
-            </el-checkbox>
-        </el-checkbox-group>
+
+        <div class="abstract-group-data">
+          <div class="abstract-item" v-for="(item,index) of abstractList" :key="index">
+            <abstract-item 
+              :abstract="item" 
+              :searchSimilar="searchSimilar" 
+              :showCollect="showCollect"
+              @open-collect="openCollect" 
+              :from="from" />
+          </div>
+        </div>
         <div class="abstract-list" v-if="!checkbox">
             <abstract-item class="abstract" v-for="(item,index) of abstractList" :key="index" :abstract="item"
                            :searchSimilar="searchSimilar" :checkbox="checkbox" :showCollect="showCollect"
                            @open-collect="openCollect" :from="from"></abstract-item>
         </div>
-        <div class="abstract-checkbox-group-empty" v-if="abstractList.length===0">
+        <div class="abstract-group-empty" v-if="abstractList.length===0">
             <span>暂无数据</span>
         </div>
     </div>
@@ -84,10 +88,10 @@ export default {
 
 <style scoped lang="scss">
     .abstract-group {
-        .abstract-checkbox-group {
+        .abstract-group-data {
             /*padding: 0 4px;*/
 
-            .abstract-checkbox {
+            .abstract-item {
                 width: 100%;
                 border-bottom: 1px solid #ECEEF5;
                 /*cursor: auto;*/
@@ -107,6 +111,7 @@ export default {
                     padding: 0;
                     width: 100%;
                 }
+                padding: 30px 30px 0px 30px;
             }
 
         }
@@ -124,7 +129,7 @@ export default {
             }
         }
 
-        .abstract-checkbox-group-empty {
+        .abstract-group-empty {
             text-align: center;
             border-bottom: 1px solid #ECEEF5;
             border-right: 1px solid #ECEEF5;

@@ -1,23 +1,33 @@
 <template>
-    <div class="abstract-item" :class="checkbox ? 'abstract-checkbox-item': 'abstract-list-item'"
-         @click.prevent="goInfo(abstract,from)">
-        <div class="abstract-item-header">
-            <div class="abstract-item-title">
-                <i class="abstract-item-icon"
-                   v-if="isFileF(abstract.title)"
-                   :class="abstract.title|fileName" 
-                   @click="openFile(abstract)"/>
-                <span v-html="abstract.title" :title="(abstract.title).replace(/<[^>]+>/g,'')">
-                </span>
-            </div>
-            <div class="abstract-time">发布日期：{{abstract.publishDate | timeFilter}}</div>
-            <!--<div class="abstract-item-search" v-if="searchSimilar"><i class="el-icon-search"></i>找相似知识</div>-->
-            <div class="abstract-item-handle" v-if="showCollect" @click.stop="openCollect(abstract)"><i
-                    class="ic-shoucang1"></i>收藏
-            </div>
-            <!-- <div class="abstract-item-handle" v-if="abstract.filePath" @click="gotoView(abstract.filePath)"><i class="el-icon-view"/>View</div> -->
-            <!-- <div class="abstract-item-handle" v-if="abstract.filePath" @click="download(abstract.filePath)"><i class="el-icon-download"></i>下载</div> -->
-            <!-- <div class="abstract-item-handle" v-if="abstract.filePath">主文档</div> -->
+      <div >
+        <div>
+          <el-row class="abstract-item">
+              <el-col :span="12" class="abstract-item-header">
+                <div class="abstract-item-title">
+                    <i class="abstract-item-icon"
+                      v-if="isFileF(abstract.title)"
+                      :class="abstract.title|fileName" 
+                      @click="openFile(abstract)"/>
+                    <span v-html="abstract.title" :title="(abstract.title).replace(/<[^>]+>/g,'')" />
+                    
+                </div>
+                
+                <div class="abstract-time">发布日期：{{abstract.publishDate | timeFilter}}</div>
+                <!--<div class="abstract-item-search" v-if="searchSimilar"><i class="el-icon-search"></i>找相似知识</div>-->
+                <div class="abstract-item-handle" v-if="showCollect" @click.stop="openCollect(abstract)"><i
+                        class="ic-shoucang1"></i>收藏
+                </div>
+                <div class="abstract-item-handle" @click="goInfo(abstract,from)"><i class="el-icon-view"/>View</div>
+                <div class="abstract-item-handle" @click="goInfo(abstract,from)"><i class="el-icon-document"/>申请</div>
+                <!-- <div class="abstract-item-handle" v-if="abstract.filePath" @click="download(abstract.filePath)"><i class="el-icon-download"></i>下载</div> -->
+                <!-- <div class="abstract-item-handle" v-if="abstract.filePath">主文档</div> -->
+              </el-col>
+              <el-col :span="12" align="right">
+                <div class="abstract-rate">
+                  <el-rate v-model="rate"></el-rate>
+                </div>
+              </el-col>
+            </el-row>
         </div>
         <div class="abstract-item-info">
             <span :title="abstract.author">作者：<i>{{abstract.author}}</i></span>
@@ -35,11 +45,28 @@
                 <span>浏览（{{abstract.readCount?abstract.readCount:0}}）</span>
                 <template v-if="!searchSimilar">
                     <i></i>
-                    <span>评论（{{abstract.commentCount?abstract.commentCount:0}}）</span>
+                    <span @click.prevent="handleComment(abstract)">评论（{{abstract.commentCount?abstract.commentCount:0}}）</span>
                 </template>
                 <!--<i></i>-->
                 <!--<span>下载（{{abstract.downloadCount?abstract.downloadCount:0}}）</span>-->
             </div>
+        </div>
+        <div class="abstract-item-comment" v-show="showComment && rowSelected == abstract.id">
+          <el-collapse>
+            <el-collapse-item title="Consistency" name="1">
+              <div>Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;</div>
+            </el-collapse-item>
+            <el-collapse-item title="Feedback" name="2">
+              <div>Operation feedback: enable the users to clearly perceive their operations by style updates and interactive effects;</div>
+            </el-collapse-item>
+            <el-collapse-item title="Efficiency" name="3">
+              <div>Simplify the process: keep operating process simple and intuitive;</div>
+              <div>Definite and clear: enunciate your intentions clearly so that the users can quickly understand and make decisions;</div>
+            </el-collapse-item>
+            <el-collapse-item title="Controllability" name="4">
+              <div>Decision making: giving advices about operations is acceptable, but do not make decisions for the users;</div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
         <!--<div class="abstract-item-footer">
             <div class="abstract-item-tag">
@@ -53,7 +80,7 @@
 </template>
 
 <script>
-import { previewAttFile } from "@/api/kms/main"
+import { previewAttFile, kmsReader } from "@/api/kms/main"
 
 export default {
   name: 'AbstractItem',
@@ -73,6 +100,13 @@ export default {
     },
     from:String
   },
+  data() {
+    return {
+      rate: 3,
+      showComment: false,
+      rowSelected: null,
+    }
+  },
   filters: {
     filterTag(val) {
       return val.join(' ').replace(/<[^>]+>/g, '')
@@ -89,13 +123,12 @@ export default {
     }
   },
   methods: {
-    goInfo(row,path) {
-      this.$router.push({
-          name: 'kms-view',
-          query: {
-            id: row.id
-          }
+    goInfo(row) {
+      kmsReader(row).then(res => {
+        this.$router.push({
+          path: '/kms/attachment/view/' + row.id
         })
+      })
     },
     openCollect(data) {
       this.$emit('open-collect', data)
@@ -110,6 +143,14 @@ export default {
         console.log("previewAttFile======:",res)
       })
     },
+    handleComment(abstract){
+      if(this.showComment){
+        this.showComment = false
+      } else {
+        this.showComment = true
+      }
+      this.rowSelected = abstract.id
+    }
     
   }
 }
@@ -118,17 +159,9 @@ export default {
 <style scoped lang="scss">
   $--color-primary: #1890ff;
 
-    .abstract-checkbox-item {
-        margin: 19px 9px 0 45px;
-    }
-
-    .abstract-list-item {
-        padding: 19px 9px 0 11px;
-    }
-
     .abstract-item {
         /*height: 153px;*/
-        cursor: pointer;
+        //cursor: pointer;
 
         .abstract-item-header {
             display: flex;
@@ -174,26 +207,36 @@ export default {
                 font-size: 12px;
                 line-height: 22px;
                 text-align: center;
-                cursor: pointer;
                 margin-left: 15px;
             }
 
             .abstract-item-handle {
+                cursor: pointer;
                 font-size: 12px;
                 line-height: 16px;
                 height: 16px;
                 color: $--color-primary;
-                margin-left: 15px;
-                cursor: pointer;
+                margin-left: 30px;
 
                 > i {
                     margin-right: 3px;
                 }
             }
+
+            .abstract-rate {
+              float: right;
+              margin-left: 10px;
+            }
+
+            .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
         }
 
         .abstract-item-info {
-            margin-bottom: 12px;
+            margin-top: 5px;
             font-size: 12px;
             height: 15px;
             line-height: 15px;
@@ -216,7 +259,6 @@ export default {
         }
 
         .abstract-item-desc {
-            cursor: pointer;
             font-size: 14px;
             color: #606266;
             white-space: pre-wrap;
@@ -228,6 +270,16 @@ export default {
             margin-bottom: 11px;
         }
 
+        .abstract-item-comment {
+          margin-bottom: 20px;
+          .el-collapse {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 20px;
+          }
+          
+        }
+
         .abstract-item-footer {
             display: flex;
             justify-content: space-between;
@@ -236,7 +288,6 @@ export default {
             line-height: 15px;
             color: #909399;
             margin-bottom: 19px;
-
             .abstract-item-tag {
                 white-space: pre-wrap;
                 overflow: hidden;
@@ -257,6 +308,9 @@ export default {
                     height: 12px;
                     background-color: #C0C4CC;
                     margin-right: 8px;
+                }
+                > span:last-of-type {
+                  cursor: pointer;
                 }
             }
         }

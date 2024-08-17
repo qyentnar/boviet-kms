@@ -29,9 +29,7 @@ export default {
     },
     data() {
         return {
-            baseUrl: process.env.VUE_APP_BASE_API,
-            pdfUrl: "",
-            id: this.$route.query.id,
+            pdfUrl: process.env.VUE_APP_BASE_API + this.$route.query.filePath,
         };
     },
     created() {
@@ -39,13 +37,7 @@ export default {
     },
     methods: {
         getDocument() {
-            previewAttFile(this.id).then(res => {
-                const data = res.data
-                data.forEach(item => {
-                    console.log("item:", item.converted);
-                });
-                this.pdfUrl = this.baseUrl + res.data[0].converted
-            });
+            console.log("pdfUrl:", this.pdfUrl);
         },
         goBack() {
             this.$router.back();

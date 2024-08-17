@@ -52,6 +52,14 @@ export function updateMain(data) {
   })
 }
 
+export function kmsReader(data){
+  return request({
+    url: '/kms/main/kmsReader',
+    method: 'post',
+    data: data
+  })
+}
+
 export function startProcess(id){
   return request({
     url: '/kms/main/startProcess',

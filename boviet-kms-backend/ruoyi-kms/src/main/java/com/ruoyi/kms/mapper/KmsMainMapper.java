@@ -27,6 +27,9 @@ public interface KmsMainMapper extends BaseMapper<KmsMain>
      */
     public KmsMainVo selectKmsMainById(Long id);
 
+    
+    public List<KmsMainVo> selectKmsMainByAttCode(String attCode);
+
     /**
      * 
      * @param userId

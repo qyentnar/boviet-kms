@@ -29,6 +29,10 @@ public class KmsCatalog extends BaseEntity
     @Excel(name = "目录名称")
     private String title;
 
+    /** 缩写目录名 */
+    @Excel(name = "缩写目录名")
+    private String shortTitle;
+
     /** 父目录 */
     @Excel(name = "父目录")
     private Long parentId;
@@ -44,6 +48,10 @@ public class KmsCatalog extends BaseEntity
     /** 目录封面 */
     @Excel(name = "目录封面")
     private String cover;
+
+    /** 部门 */
+    @Excel(name = "部门")
+    private Long deptId;
 
     /** 创建者ID */
     @ApiModelProperty("创建者ID")

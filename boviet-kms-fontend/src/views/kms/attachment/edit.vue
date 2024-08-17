@@ -139,6 +139,10 @@
     import moment from 'moment'
     import Treeselect from "@riophae/vue-treeselect";
     import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+    
+    import { listAttachmentLevel } from "@/api/kms/attachment-level"
+    import { listAttachmentType } from "@/api/kms/attachment-type"
+    import { listStorageTime } from "@/api/kms/storage-time"
 
     export default {
         components:{
@@ -159,54 +163,19 @@
                         checkText: ''
                     },
                 },
-                attTypeOptions:[
-                    {
-                        value: "1",
-                        label: "电子"
-                    },
-                    {
-                        value: "2",
-                        label: "纸质"
-                    },
-                    {
-                        value: "3",
-                        label: "电子和纸质"
-                    }
-                ],
+                attTypeOptions:[],
                 areaOptions:[],
                 breadcrumbList: [
                     {
                     name: "档案录入",
                     },
                 ],
-                storageTimeOptions: [
-                    {
-                        value: "5",
-                        label: "短期"
-                    },
-                    {
-                        value: "10",
-                        label: "长期"
-                    },
-                    {
-                        value: "9999",
-                        label: "永久"
-                    }
-                ],
+                storageTimeOptions: [],
                 custodyUnitOptions:[],
                 attClassificationOptions:[
-                    {
-                        value: "1",
-                        label: "秘密"
-                    },
-                    {
-                        value: "2",
-                        label: "机密"
-                    },
-                    {
-                        value: "3",
-                        label: "绝密"
-                    }
+                    {id: 1, name: "秘密"},
+                    {id: 2, name: "机密"},
+                    {id: 3, name: "绝密"},
                 ],
                 catalogOptions:[],
                 directory:"",
@@ -219,26 +188,31 @@
         },
         methods:{
             getKmsMain(){
-                const id = this.$route.params  && this.$route.params.id
-                if(id){
-                    getMain(id).then(res => {
-                        const data = res.data
-                        this.form = data
-                        listCatalogForTree().then(res => {
-                            const catalogs = res.data
-                            this.catalogOptions = this.handleTree(catalogs,"id")
-                            this.directory = catalogs.filter(item => item.id == this.form.catalogId)[0].title
-                        })
+                const id = this.$route.params && this.$route.params.id
+                getMain(id).then(res => {
+                    const data = res.data
+                    this.form = data
+                    listCatalogForTree().then(res => {
+                        const catalogs = res.data
+                        this.catalogOptions = this.handleTree(catalogs,"id")
+                        this.directory = catalogs.filter(item => item.id == this.form.catalogId)[0].title
                     })
-                    listArea().then(res => {
-                        this.areaOptions = res.rows
-                    })
-                    listCustodyUnit().then(res => {
-                        this.custodyUnitOptions = res.rows
-                    })
-                }else{
-                    this.gotoBack()
-                }
+                })
+
+                listAttachmentType().then(res => {
+                    this.attTypeOptions = res.rows
+                })
+                
+                listStorageTime().then(res => {
+                    this.storageTimeOptions = res.rows
+                })
+
+                listArea().then(res => {
+                    this.areaOptions = res.rows
+                })
+                listCustodyUnit().then(res => {
+                    this.custodyUnitOptions = res.rows
+                })
                 
             },
             gotoBack(){

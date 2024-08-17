@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.kms.mapper.KmsRoleMapper">
+    
+    <resultMap type="KmsRole" id="KmsRoleResult">
+        <result property="id"    column="id"    />
+        <result property="kmsId"    column="kms_id"    />
+        <result property="deptIds"    column="dept_ids"    />
+        <result property="groupIds"    column="group_ids"    />
+        <result property="userIds"    column="user_ids"    />
+        <result property="blackList"    column="black_list"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectKmsRoleVo">
+        select id, kms_id, dept_ids, group_ids, user_ids, black_list, del_flag, create_by, create_time, update_by, update_time, remark from kms_role
+    </sql>
+
+    <select id="selectKmsRoleList" parameterType="KmsRole" resultMap="KmsRoleResult">
+        <include refid="selectKmsRoleVo"/>
+        <where>  
+            <if test="kmsId != null "> and kms_id = #{kmsId}</if>
+            <if test="deptIds != null  and deptIds != ''"> and dept_ids = #{deptIds}</if>
+            <if test="groupIds != null  and groupIds != ''"> and group_ids = #{groupIds}</if>
+            <if test="userIds != null  and userIds != ''"> and user_ids = #{userIds}</if>
+            <if test="blackList != null  and blackList != ''"> and black_list = #{blackList}</if>
+        </where>
+    </select>
+    
+    <select id="selectKmsRoleById" parameterType="Long" resultMap="KmsRoleResult">
+        <include refid="selectKmsRoleVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertKmsRole" parameterType="KmsRole" useGeneratedKeys="true" keyProperty="id">
+        insert into kms_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="kmsId != null">kms_id,</if>
+            <if test="deptIds != null">dept_ids,</if>
+            <if test="groupIds != null">group_ids,</if>
+            <if test="userIds != null">user_ids,</if>
+            <if test="blackList != null">black_list,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="kmsId != null">#{kmsId},</if>
+            <if test="deptIds != null">#{deptIds},</if>
+            <if test="groupIds != null">#{groupIds},</if>
+            <if test="userIds != null">#{userIds},</if>
+            <if test="blackList != null">#{blackList},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKmsRole" parameterType="KmsRole">
+        update kms_role
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="kmsId != null">kms_id = #{kmsId},</if>
+            <if test="deptIds != null">dept_ids = #{deptIds},</if>
+            <if test="groupIds != null">group_ids = #{groupIds},</if>
+            <if test="userIds != null">user_ids = #{userIds},</if>
+            <if test="blackList != null">black_list = #{blackList},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteKmsRoleById" parameterType="Long">
+        delete from kms_role where id = #{id}
+    </delete>
+
+    <delete id="deleteKmsRoleByIds" parameterType="String">
+        delete from kms_role where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

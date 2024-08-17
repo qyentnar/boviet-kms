@@ -3,7 +3,6 @@ package com.ruoyi.kms.domain;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

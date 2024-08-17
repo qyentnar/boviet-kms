@@ -1,16 +1,13 @@
 package com.ruoyi.activiti.service.impl;
 
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.activiti.domain.SysActivitiTemplate;
@@ -30,7 +27,6 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.activiti.bpmn.model.Process;
-import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.bpmn.model.UserTask;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -275,24 +271,37 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
         return list;
     }
 
-    public void completeTask(SysActivitiApprove sysActivitiApprove) {
-        String processInstanceId = sysActivitiApprove.getProcessInstanceId();
-        String assignee = sysActivitiApprove.getAssignee();
-        String comment = sysActivitiApprove.getComment();
-        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-        TaskService taskService = processEngine.getTaskService();
-
-        Task task = taskService.createTaskQuery()
-                // .processDefinitionKey(key)
-                .processInstanceId(processInstanceId)
-                .taskAssignee(assignee)
-                .singleResult();
-
-        // taskService.complete(task.getId());
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("comment", comment);
-        taskService.addComment(task.getId(), processInstanceId, comment);
-        taskService.complete(task.getId(), variables);
+    @Override
+    public Boolean completeTask(SysActivitiApprove sysActivitiApprove) {
+        try{
+            String processInstanceId = sysActivitiApprove.getProcessInstanceId();
+            String assignee = sysActivitiApprove.getAssignee();
+            String comment = sysActivitiApprove.getComment();
+            String operator = sysActivitiApprove.getOperator();
+            ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+            TaskService taskService = processEngine.getTaskService();
+    
+            Task task = taskService.createTaskQuery()
+                    // .processDefinitionKey(key)
+                    .processInstanceId(processInstanceId)
+                    .taskAssignee(assignee)
+                    .singleResult();
+    
+            // taskService.complete(task.getId());
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("comment", comment);
+            taskService.addComment(task.getId(), processInstanceId, comment);
+            if(operator.equals("reject")){
+                taskService.deleteTask(task.getId(), comment);
+                return true;
+            }else {
+                taskService.complete(task.getId(), variables);
+                return true;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public List<Map<String, Object>> findHistory(String processInstanceId) {
@@ -315,23 +324,26 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
                 Map<String, Object> map = new HashMap<>();
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String endTime = format.format(hi.getEndTime());
-                map.put("fdEndTime", endTime);
+                String startTime = format.format(hi.getStartTime());
+                map.put("endTime", endTime);
+                map.put("startTime", startTime);
                 map.put("completed", true);
                 map.put("key", hi.getActivityId());
-                map.put("class", hi.getActivityType());
-                if ("StartEvent".equals(hi.getActivityName())) {
-                    map.put("fdActivityName", "开始节点");
-                    map.put("fdAssignee", "系统");
-                } else if ("EndEvent".equals(hi.getActivityName())) {
-                    map.put("fdActivityName", "结束节点");
-                    map.put("fdAssignee", "系统");
+                map.put("activityType", hi.getActivityType());
+                if ("startevent".equalsIgnoreCase(hi.getActivityType())) {
+                    map.put("activityName", "开始节点");
+                    map.put("assignee", "系统");
+                    map.put("operator", "提交文档");
+                } else if ("endevent".equalsIgnoreCase(hi.getActivityType())) {
+                    map.put("activityName", "结束节点");
+                    map.put("assignee", "系统");
+                    map.put("operator", "结束流程");
                 } else {
-                    map.put("fdActivityName", hi.getActivityName());
-                    map.put("fdAssignee", hi.getAssignee());
+                    map.put("activityName", hi.getActivityName());
+                    map.put("assignee", hi.getAssignee());
+                    map.put("operator", "批准流程");
                 }
-                if (CollUtil.isNotEmpty(comments)) {
-                    map.put("comments", comments.get(0).getFullMessage());
-                }
+                map.put("comments", CollUtil.isNotEmpty(comments) ? comments.get(0).getFullMessage() : null);
                 rtnList.add(map);
             }
         }
@@ -376,18 +388,23 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
         Collection<FlowElement> flowElements = process.getFlowElements();
 
         List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>();
-        // In ra thông tin các nodes
+        
         for (FlowElement flowElement : flowElements) {
-            System.out.println("===================findAllNodes===================");
-            System.out.println("Node ID     : " + flowElement.getId());
-            System.out.println("Node Name   : " + flowElement.getName());
-            System.out.println("Node Class  : " + flowElement.getClass().getSimpleName());
-            System.out.println("==================================================");
-            map.put("NodeID", flowElement.getId());
-            map.put("NodeName", flowElement.getName());
-            map.put("NodeClass", flowElement.getClass().getSimpleName());
-            results.add(map);
+            if(flowElement instanceof UserTask){
+                UserTask userTask = (UserTask) flowElement;
+                System.out.println("===================findAllNodes===================");
+                System.out.println("Node ID     : " + userTask.getId());
+                System.out.println("Node Name   : " + userTask.getName());
+                System.out.println("Node Assignee   : " + userTask.getAssignee());
+                System.out.println("Node Class  : " + userTask.getClass().getSimpleName());
+                System.out.println("==================================================");
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("NodeID", userTask.getId());
+                map.put("NodeName", userTask.getName());
+                map.put("NodeAssignee", userTask.getAssignee());
+                map.put("NodeClass", userTask.getClass().getSimpleName());
+                results.add(map);
+            }
         }
         return results;
     }
@@ -414,68 +431,24 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
     }
 
     @Override
-    public List<Map<String, Object>> processHistory(String processInstanceId) {
-        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-        // Lấy RepositoryService
-        RepositoryService repositoryService = processEngine.getRepositoryService();
-
-        ProcessInstance processInstance = getProcessInstanceByProcessInstanceId(processInstanceId);
-        String processDefinitionId = processInstance.getProcessDefinitionId();
-        // Lấy ProcessDefinition từ key của quy trình
-        ProcessDefinition processDefinition = repositoryService.getProcessDefinition(processDefinitionId);
-
-        // Lấy mô hình BPMN của quy trình
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinition.getId());
-
-        // Lấy quy trình từ mô hình BPMN
-        Process process = bpmnModel.getMainProcess();
-
+    public List<Map<String, Object>> currentProcess(String processInstanceId) {
         // Lấy danh sách các tác vụ hiện tại
         List<Task> tasks = taskService.createTaskQuery()
-                .processInstanceId(processInstanceId)
-                .list();
-
-        // Tạo một Map để lưu trữ các phần tử tiếp theo
-        Map<String, FlowElement> elementMap = new HashMap<>();
-        for (FlowElement element : process.getFlowElements()) {
-            elementMap.put(element.getId(), element);
-        }
+                                      .processInstanceId(processInstanceId)
+                                      .list();
 
         List<Map<String, Object>> historyList = findHistory(processInstanceId);
         Map<String, Object> map = new HashMap<>();
-        // Duyệt qua tất cả các tác vụ hiện tại để xác định nút tiếp theo
         for (Task task : tasks) {
-            // String currentTaskId = task.getTaskDefinitionKey();
-            // // Tìm các phần tử tiếp theo từ nút hiện tại
-            // for (SequenceFlow sequenceFlow : process.getFlowElements().stream()
-            //         .filter(e -> e instanceof SequenceFlow)
-            //         .map(e -> (SequenceFlow) e)
-            //         .collect(Collectors.toList())) {
-            //     // Kiểm tra xem SequenceFlow có nối với nút hiện tại không
-            //     if (sequenceFlow.getSourceRef().equals(currentTaskId)) {
-            //         String targetId = sequenceFlow.getTargetRef();
-            //         FlowElement nextElement = elementMap.get(targetId);
-
-            //         if (nextElement != null && nextElement instanceof UserTask) {
-            //             UserTask userTask = (UserTask) nextElement;
-            //             map.put("fdAssignee", userTask.getAssignee());
-            //             map.put("fdActivityName", userTask.getName());
-            //             map.put("completed", false);
-            //             map.put("key", userTask.getId());
-            //             for (Map<String,Object> history : historyList) {
-            //                 if(history.get("class").toString().equalsIgnoreCase("usertask")){
-            //                     historyList.add(map);
-            //                     break;
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-
-            map.put("fdAssignee", task.getAssignee());
-            map.put("fdActivityName", task.getName());
+            map.put("assignee", task.getAssignee());
+            map.put("activityName", task.getName());
             map.put("completed", false);
             map.put("key", task.getTaskDefinitionKey());
+            map.put("endTime", null);
+            map.put("startTime", task.getCreateTime());
+            map.put("comments", null);
+            map.put("activityType", "userTask");
+            map.put("operator", "批准流程");
             historyList.add(map);
         }
         return historyList;
@@ -485,5 +458,22 @@ public class SysActivitiTemplateServiceImpl implements ISysActivitiTemplateServi
     public SysActivitiTemplate getTemplate(Long id){
         SysActivitiTemplate sysActivitiTemplate = selectSysActivitiTemplateById(id);
         return sysActivitiTemplate;
+    }
+
+    public Map<String, Object> getProcessStatus(String processInstanceId){
+        List<Map<String, Object>> allUserTask = findAllNodes(processInstanceId);
+        List<Map<String, Object>> processHistory = findHistory(processInstanceId);
+
+        Integer totalNode = allUserTask.size();
+
+
+        ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+        RuntimeService runtimeService = processEngine.getRuntimeService();
+        List<ProcessInstance> processInstances = runtimeService.createProcessInstanceQuery().list();
+
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("totalNode", totalNode);
+        return map;
     }
 }

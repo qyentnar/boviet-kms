@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.kms.domain.KmsMain;
+import com.ruoyi.kms.domain.KmsMainVisit;
 import com.ruoyi.kms.vo.KmsMainVo;
 import com.ruoyi.kms.dto.KmsMainDto;
 import com.ruoyi.kms.dto.KmsSearchDto;
@@ -24,6 +25,8 @@ public interface IKmsMainService extends IService<KmsMain>
      * @return 知识
      */
     public KmsMainVo selectKmsMainById(Long id);
+
+    public KmsMainVo selectKmsMainByAuthor(Long id, String username);
 
     /**
      * 查询知识列表
@@ -97,4 +100,11 @@ public interface IKmsMainService extends IService<KmsMain>
     public List<KmsMain> listVerson(Long id);
 
     public int startProcess(Long id);
+
+    /**
+     * 
+     * @param kmsMainDto
+     * @return
+     */
+    public int kmsReader(KmsMainDto kmsMainDto, KmsMainVisit kmsMainVisit);
 }

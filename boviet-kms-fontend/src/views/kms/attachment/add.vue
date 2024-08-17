@@ -26,8 +26,8 @@
                                 <el-select v-model="form.attType" placeholder="请选择档案类型" size="mini">
                                     <el-option v-for="(attType,index) in attTypeOptions" 
                                             :key="index" 
-                                            :label="attType.label"
-                                            :value="attType.value"/>
+                                            :label="attType.name"
+                                            :value="attType.id"/>
                                 </el-select>
                             </el-descriptions-item>
                             <el-descriptions-item label="所属分类">
@@ -66,8 +66,8 @@
                                 <el-select v-model="form.storageTime" placeholder="请选择保管期限" size="mini">
                                   <el-option v-for="(storageTime,index) in storageTimeOptions" 
                                     :key="index" 
-                                    :label="storageTime.label"
-                                    :value="storageTime.value" />
+                                    :label="storageTime.name"
+                                    :value="storageTime.id" />
                                 </el-select>
                             </el-descriptions-item>
                             <el-descriptions-item label="档案有效期">
@@ -92,8 +92,8 @@
                                 <el-select v-model="form.attClassification" placeholder="请选择密级程度" size="mini">
                                   <el-option v-for="(attClassification, index) in attClassificationOptions" 
                                     :key="index" 
-                                    :label="attClassification.label"
-                                    :value="attClassification.value"/>
+                                    :label="attClassification.name"
+                                    :value="attClassification.id"/>
                                 </el-select>
                             </el-descriptions-item>
                             <el-descriptions-item label="件数/本">
@@ -134,18 +134,26 @@
                   </el-col>
                 </el-row>
             </el-card>
+            <el-card class="card-box" ref="card-permission">
+                <div slot="header">
+                    <span>权限</span>
+                </div>
+                
+            </el-card>
         </el-form>
         <el-backtop />
     </div>
 </template>
 
 <script>
-    import { listCatalogForTree } from "@/api/kms/catalog";
+    import { getCatalog } from "@/api/kms/catalog";
     import { listArea } from "@/api/kms/area";
     import BreadcrumbHeader from "../../kms/components/breadcrumb-header";
     import { listCustodyUnit } from "@/api/kms/custody-unit";
     import {addMain, updateMain } from "@/api/kms/main";
     import moment from 'moment'
+    import { listAttachmentType } from "@/api/kms/attachment-type"
+    import { listStorageTime } from "@/api/kms/storage-time"
 
     export default {
         components:{
@@ -158,85 +166,48 @@
                     createTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
                 },
                 kmsCatalog:{},
-                attTypeOptions:[
-                    {
-                        value: "1",
-                        label: "电子"
-                    },
-                    {
-                        value: "2",
-                        label: "纸质"
-                    },
-                    {
-                        value: "3",
-                        label: "电子和纸质"
-                    }
-                ],
+                attTypeOptions:[],
                 areaOptions:[],
                 breadcrumbList: [
                     {
                     name: "档案录入",
                     },
                 ],
-                storageTimeOptions: [
-                    {
-                        value: "5",
-                        label: "短期"
-                    },
-                    {
-                        value: "10",
-                        label: "长期"
-                    },
-                    {
-                        value: "9999",
-                        label: "永久"
-                    }
-                ],
+                storageTimeOptions: [],
                 custodyUnitOptions:[],
                 attClassificationOptions:[
-                    {
-                        value: "1",
-                        label: "秘密"
-                    },
-                    {
-                        value: "2",
-                        label: "机密"
-                    },
-                    {
-                        value: "3",
-                        label: "绝密"
-                    }
+                    {id: 1, name: "秘密"},
+                    {id: 2, name: "机密"},
+                    {id: 3, name: "绝密"},
                 ],
                 directory:"",
             }
         },
         created(){
-            const id = this.$route.params && this.$route.params.catalogId
-            if(id == "" || id == undefined) {
-                this.$router.push({
-                    path: "/kms/attachment"
-                })
-            }
         },
         mounted() {
-            this.getCatalogs()
+            this.getList()
         },
         methods:{
-            getCatalogs(){
-                const catalogParams = {
-                    id: this.$route.params.catalogId
-                }
-                listCatalogForTree(catalogParams).then(res => {
+            getList(){
+                const id = this.$route.params && this.$route.params.catalogId
+                getCatalog(id).then(res => {
                     const data = res.data
                     if(data != undefined) {
-                        this.kmsCatalog = data[0]
+                        this.kmsCatalog = data
                         this.directory = this.kmsCatalog.title
                     }
                     else{
-                        this.$router.push({
-                            path: "/kms/attachment"
-                        })
+                        this.close();
                     }
+                })
+
+                listAttachmentType().then(res => {
+                    this.attTypeOptions = res.rows
+                })
+                
+                listStorageTime().then(res => {
+                    this.storageTimeOptions = res.rows
                 })
 
                 listArea().then(res => {
@@ -298,8 +269,8 @@
                     this.form.updateBy = null
                     this.form.updateUserId = null
                     this.form.catalogId = this.kmsCatalog.id
-                    this.form.attCreateTime = moment(this.form.attCreateTime).format("YYYY-MM-DD HH:mm:ss")
-                    this.form.attExpirationTime = moment(this.form.attExpirationTime).format("YYYY-MM-DD HH:mm:ss")
+                    this.form.attCreateTime = this.form.attCreateTime == null ? null : moment(this.form.attCreateTime).format("YYYY-MM-DD HH:mm:ss")
+                    this.form.attExpirationTime = this.form.attExpirationTime == null ? null : moment(this.form.attExpirationTime).format("YYYY-MM-DD HH:mm:ss")
                     if (this.form.id != null) {
                         this.form.state = null
                         updateMain(this.form).then(response => {

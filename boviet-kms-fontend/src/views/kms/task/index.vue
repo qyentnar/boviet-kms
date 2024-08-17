@@ -10,7 +10,7 @@
                     <el-tag effect="light" type="warning">
                         #{{task.id}}
                     </el-tag>
-                    <el-button class="operator" type="primary" size="mini" @click="handleSubmit(task.id)">提交</el-button>
+                    <el-button class="operator" type="primary" size="mini" @click="openTask(task.id)">提交</el-button>
                 </div>
                 <div class="card-body">
                     <el-descriptions :column="1" border size="mini">
@@ -66,7 +66,7 @@ import FormApprove from "@/views/activiti/components/form-approve";
 import { mapGetters } from "vuex";
 import { getMain, previewAttFile, listVersion } from "@/api/kms/main";
 import { getCatalog } from "@/api/kms/catalog";
-import { findTask, findHistory, findAllNodes, processHistory, getTemplate } from "@/api/activiti/template"
+import { findTask, currentProcess, getTemplate } from "@/api/activiti/template"
 
 export default {
     name: "kms-task",
@@ -127,7 +127,7 @@ export default {
                     const findTask = response.data;
                     this.activitData = findTask
                 })
-                processHistory(this.processInstanceId).then(response => {
+                currentProcess(this.processInstanceId).then(response => {
                     const findHistory = response.data;
                     this.historyData = findHistory
                     this.processData.nodeData = findHistory
@@ -173,7 +173,7 @@ export default {
                 this.loading = false
             })
         },
-        handleSubmit(id) {
+        openTask(id) {
             const date = new Date().getTime()
             this.initView(id);
             this.dialogKey = id + date; 
@@ -199,8 +199,8 @@ export default {
 
 <style lang="scss" scoped>
 .app-container {
-    background-color: #f0f2f5;
-    height: 85vh;
+    height: calc(100vh - 84px);
+    background-color: rgb(240, 242, 245);
 }
 
 .box-card {

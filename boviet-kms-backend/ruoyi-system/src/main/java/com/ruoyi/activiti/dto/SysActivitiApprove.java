@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 public class SysActivitiApprove {
 
     private String processInstanceId;
+    private String operator;
     private String assignee;
     private String comment;
 }

@@ -251,5 +251,5 @@ public class KmsMainDto extends BaseEntity implements Serializable {
     /** 请求参数 */
     private Map<String, Object> params;
 
-
+    private Map<String, Object> searchTimes;
 }

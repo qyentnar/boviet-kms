@@ -7,10 +7,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="KmsCatalog" id="KmsCatalogResult">
         <result property="id"    column="id"    />
         <result property="title"    column="title"    />
+        <result property="shortTitle"    column="short_title"    />
         <result property="parentId"    column="parent_id"    />
         <result property="sort"    column="sort"    />
         <result property="description"    column="description"    />
         <result property="cover"    column="cover"    />
+        <result property="deptId"    column="dept_id"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
@@ -21,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectKmsCatalogVo">
-        select id, title, parent_id, sort, description, cover,create_by, create_time, update_by, update_time, create_user_id, update_user_id,template_id from kms_catalog
+        select id, title, short_title, parent_id, sort, description, cover,create_by, create_time, update_by, update_time, create_user_id, update_user_id,template_id from kms_catalog
     </sql>
 
     <select id="selectKmsCatalogList" parameterType="KmsCatalog" resultMap="KmsCatalogResult">
@@ -29,10 +31,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>
             <if test="id != null and id != ''">and id = #{id}</if>
             <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="shortTitle != null  and shortTitle != ''"> and short_title = #{shortTitle}</if>
             <if test="parentId != null "> and parent_id = #{parentId}</if>
             <if test="sort != null "> and sort = #{sort}</if>
             <if test="description != null  and description != ''"> and description = #{description}</if>
             <if test="cover != null  and cover != ''"> and cover = #{cover}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
             <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
             <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
         </where>
@@ -48,10 +52,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="title != null">title,</if>
+            <if test="shortTitle != null">short_title,</if>
             <if test="parentId != null">parent_id,</if>
             <if test="sort != null">sort,</if>
             <if test="description != null">description,</if>
             <if test="cover != null">cover,</if>
+            <if test="deptId != null">dept_id,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateBy != null">update_by,</if>
@@ -63,10 +69,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="title != null">#{title},</if>
+            <if test="shortTitle != null">#{shortTitle},</if>
             <if test="parentId != null">#{parentId},</if>
             <if test="sort != null">#{sort},</if>
             <if test="description != null">#{description},</if>
             <if test="cover != null">#{cover},</if>
+            <if test="deptId != null">#{deptId},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateby},</if>
@@ -81,10 +89,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update kms_catalog
         <trim prefix="SET" suffixOverrides=",">
             <if test="title != null">title = #{title},</if>
+            <if test="shortTitle != null">short_title = #{shortTitle},</if>
             <if test="parentId != null">parent_id = #{parentId},</if>
             <if test="sort != null">sort = #{sort},</if>
             <if test="description != null">description = #{description},</if>
             <if test="cover != null">cover = #{cover},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

@@ -116,25 +116,25 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/kms/attachment/add',
+    path: '/kms/attachment/add/:catalogId(\\d+)',
     component: () => import('@/views/kms/attachment/add'),
     name: 'attachment-add',
     hidden: true,
   },
   {
-    path: '/kms/attachment/edit',
+    path: '/kms/attachment/edit/:id(\\d+)',
     component: () => import('@/views/kms/attachment/edit'),
     name: 'attachment-edit',
     hidden: true,
   },
   {
-    path: '/kms/attachment/new-version',
+    path: '/kms/attachment/new-version/:id(\\d+)',
     component: () => import('@/views/kms/attachment/newversion'),
     name: 'attachment-newversion',
     hidden: true,
   },
   {
-    path: '/kms/attachment/view',
+    path: '/kms/attachment/view/:id(\\d+)',
     component: () => import('@/views/kms/attachment/view'),
     name: 'attachment-view',
     hidden: true,

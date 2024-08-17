@@ -2,6 +2,14 @@
     <div class="app-container">
         <el-tabs v-model="mainTabs" @tab-click="handleTabsClick">
             <el-tab-pane label="我录入的" name="my-attachment">
+                <el-row type="flex" justify="end">
+                  <el-col :span="12">
+                    <el-input v-model="queryParams.title" placeholder="请输入档案名称" class="input-with-select" clearable>
+                        <template slot="prepend">档案名称: </template>
+                        <el-button slot="append" icon="el-icon-search" @click="handleQuery"></el-button>
+                    </el-input>
+                  </el-col>
+                </el-row>
                 <el-card v-show="showSearch" :style="`margin-bottom: 30px`">
                     <el-row class="search-input">
                         <el-col :md="12" :sm="24" :xs="24">
@@ -10,16 +18,12 @@
                                     <el-col :span="24">
                                         <el-form-item prop="catalogId">
                                             <div class="search-toolbar">
-                                                <el-dropdown class="dropdown-list">
-                                                    <el-button style="width: 120px;">
+                                                <el-dropdown class="dropdown-list" @command="handleCatalogSelected" trigger="click" size="mini">
+                                                    <el-button style="width: 120px;" size="mini">
                                                         所属分类 <i class="el-icon-arrow-down el-icon--right"></i>
                                                     </el-button>
-                                                    <el-dropdown-menu slot="dropdown">
-                                                        <el-dropdown-item>Action 1</el-dropdown-item>
-                                                        <el-dropdown-item>Action 2</el-dropdown-item>
-                                                        <el-dropdown-item>Action 3</el-dropdown-item>
-                                                        <el-dropdown-item>Action 4</el-dropdown-item>
-                                                        <el-dropdown-item>Action 5</el-dropdown-item>
+                                                    <el-dropdown-menu slot="dropdown" >
+                                                        <el-dropdown-item v-for="catalog in catalogOptions" :key="catalog.id" :command="catalog.id">{{catalog.title}}</el-dropdown-item>
                                                     </el-dropdown-menu>
                                                 </el-dropdown>
                                                 <div v-for="catalog in catalogOptions" :key="catalog.id">
@@ -35,7 +39,7 @@
                                             <span class="toolbar-label">
                                                 档案编号
                                             </span>
-                                            <el-input v-model="attCode" clearable  placeholder="请输入" size="small" style="width: 350px;" @input="handleAttCodeInput">
+                                            <el-input v-model="attCode" clearable  placeholder="请输入档案编号" size="mini" style="width: 350px;" @input="handleAttCodeInput">
                                                 <el-button v-show="showBtnAttCodeSearch" :slot="showBtnAttCodeSearch ? 'append': ''" icon="el-icon-search" @click="handleAttCodeSearch"/>
                                             </el-input>
                                         </div>
@@ -47,7 +51,7 @@
                                             </span>
                                             <div class="block">
                                                 <el-date-picker
-                                                    v-model="queryParams.createTime"
+                                                    v-model="dateRange"
                                                     type="daterange"
                                                     align="left"
                                                     unlink-panels
@@ -55,7 +59,8 @@
                                                     start-placeholder="开始时间"
                                                     end-placeholder="结束时间"
                                                     :picker-options="pickerOptions" 
-                                                    @change="handleCreateTimeChanged"/>
+                                                    @change="handleQuery"
+                                                    size="mini"/>
                                             </div>
                                         </div>
                                     </el-col>
@@ -63,9 +68,6 @@
                             </el-form>
                         </el-col>
                         <el-col :md="12" :sm="24" :xs="24">
-                            <el-input placeholder="请输入" class="input-with-select" clearable >
-                                <el-button slot="append" icon="el-icon-search"></el-button>
-                            </el-input>
                             <div>
                                 <el-tag closable @close="handleCloseTag(1)" v-if="queryParams.catalogId.length > 0" type="warning" effect="dark" style="margin-right: 10px;">
                                     <span v-for="(catalog,index) in catalogList.filter(item => queryParams.catalogId.includes(item.id))" :key="index">
@@ -83,8 +85,8 @@
                                 <el-tag closable @close="handleCloseTag(2)" v-if="queryParams.attCode.length > 0" type="warning" effect="dark" style="margin-right: 10px;">
                                     档案编号: {{queryParams.attCode}}
                                 </el-tag>
-                                <el-tag closable @close="handleCloseTag(3)" v-if="queryParams.createTime.length > 0" type="warning" effect="dark">
-                                    归档日期: {{queryParams.createTime}}
+                                <el-tag closable @close="handleCloseTag(3)" v-if="queryParams.searchTimes != null" type="warning" effect="dark">
+                                    归档日期: {{queryParams.searchTimes.start}} ~ {{queryParams.searchTimes.end}}
                                 </el-tag>
                             </div>
                         </el-col>
@@ -110,19 +112,17 @@
                 </el-row>
                 <el-table ref="dataTable" v-loading="loading" :data="mainList" @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column label="主键ID" align="center" prop="id"/>
+                    <el-table-column label="主键ID" align="center" prop="id" width="55"/>
                     <el-table-column label="档案名称" align="center" prop="title" />
                     <el-table-column label="档案编号" align="center" prop="attCode" />
                     <el-table-column label="归档人" align="center" prop="archiver" />
                     <el-table-column label="归档日期" align="center" prop="createTime" />
                     <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-                        <template slot-scope="scope">
-                            <!-- <el-button size="mini" type="primary" class="btn-action" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['kms:main:edit']" v-if="scope.row.state!=20">编辑</el-button> -->
-                            <el-button size="mini" type="success" plain class="btn-action" icon="el-icon-position" @click="handleStartProcess(scope.row)" v-hasPermi="['kms:main:start']" v-if="!scope.row.processInstanceId">发布</el-button>
-                            <!-- <el-button size="mini" type="primary" class="btn-action" icon="el-icon-edit" @click="handleNewVersion(scope.row)" v-hasPermi="['kms:main:edit']" v-if="scope.row.state==='20'">新版本</el-button> -->
-                            <!-- <el-button size="mini" type="danger" class="btn-action" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['kms:main:remove']" v-if="!scope.row.processInstanceId">删除</el-button> -->
-                            <!-- <el-button size="mini" type="text" icon="el-icon-preview" @click="handlePreviewAttFile(scope.row)" v-if="scope.row.fileName!=null">预览附件</el-button> -->
-                            <el-button size="mini" type="default" plain class="btn-action" icon="el-icon-view" @click="handleView(scope.row)">查看</el-button>
+                        <template slot-scope="scope" >
+                            <el-row type="flex" justify="end">
+                                <el-button size="mini" type="text" plain class="btn-action" icon="el-icon-position" @click="handleStartProcess(scope.row)" v-hasPermi="['kms:main:start']" v-if="!scope.row.processInstanceId">发布</el-button>
+                                <el-button size="mini" type="text" plain class="btn-action" icon="el-icon-view" @click="handleView(scope.row)">查看</el-button>
+                            </el-row>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -292,6 +292,7 @@
                 catalogList: [],
                 attCode: "",
                 catalogName:"",
+                dateRange : null,
                 showBtnAttCodeSearch: false,
                 catalogTreeSelect:[],
                 openPreview: false,
@@ -513,6 +514,15 @@
             },
             /** 搜索按钮操作 */
             handleQuery() {
+                this.queryParams.searchTimes = null;
+                if(this.dateRange != null && this.dateRange != ""){
+                    const start = moment(this.dateRange[0]).format('YYYY-MM-DD')
+                    const end = moment(this.dateRange[1]).format('YYYY-MM-DD')
+                    this.queryParams.searchTimes = {
+                        start: start,
+                        end: end
+                    }
+                }
                 this.queryParams.pageNum = 1;
                 this.getList();
             },
@@ -539,10 +549,7 @@
             handleUpdate(row){
                 const ids = row.id || this.ids;
                 this.$router.push({
-                    name: "attachment-edit",
-                    params: {
-                        id: ids
-                    }
+                    path: '/kms/attachment/edit/' + ids
                 })
             },
             /** 删除按钮操作 */
@@ -615,10 +622,7 @@
             /** 查看详情操作 */
             handleView(row){
                 this.$router.push({
-                    name: "attachment-view",
-                    params: {
-                        id: row.id
-                    }
+                    path: '/kms/attachment/view/' + row.id
                 })
             },
             handleStartProcess(row){
@@ -628,6 +632,7 @@
                     }else{
                         this.$modal.msgSuccess("启动流程成功");
                         this.getList();
+                        this.getListTemp();
                     }
                 })
             },
@@ -668,9 +673,12 @@
                         this.queryParams.attCode = ""
                         break;
                     case 3:
-                        this.queryParams.createTime = ""
+                        this.dateRange = null;
+                        this.queryParams.searchTimes = null
                         break;
                 }
+                console.log(this.queryParams.searchTimes)
+                this.handleQuery();
             },
             handleAttCodeSearch(){
                 this.queryParams.attCode = this.attCode
@@ -682,11 +690,6 @@
                     this.showBtnAttCodeSearch = false;
                 }
             },
-            handleCreateTimeChanged(daterange) {
-                const start = moment(daterange[0]).format('YYYY-MM-DD')
-                const end = moment(daterange[1]).format('YYYY-MM-DD')
-                this.queryParams.createTime = start +" ~ "+ end
-            },
             filterNode(value, row) {
                 if (!value) return true
                 return row.label.indexOf(value) > -1
@@ -695,20 +698,15 @@
                 if(!this.form.catalogId){
                     this.$message.error("请选择档案类型");
                     return false;
-                }
-                this.$router.push({
-                    name: 'attachment-add',
-                    params:{
-                        catalogId: this.form.catalogId
-                    }
-                })
+                }else{
+                    this.$router.push({
+                        path: '/kms/attachment/add/' + this.form.catalogId
+                    })
+                } 
             },
-            handleCatalogClick(id){
+            handleCatalogClick(catalogId){
                 this.$router.push({
-                    name: 'attachment-add',
-                    params:{
-                        catalogId: id
-                    }
+                    path: '/kms/attachment/add/' + catalogId
                 })
             },
             handleNodeClick(node){
@@ -743,17 +741,17 @@
             handleNewVersion(row){
                 const ids = row.id || this.ids;
                 this.$router.push({
-                    name: 'attachment-newversion',
-                    params: {
-                        id: ids
-                    }
+                    path: '/kms/attachment/new-version/' + ids
                 })
+            },
+            handleCommand(command){
+                console.log("test",command)
             }
         }
     };
     </script>
     
-    <style lang="scss">
+    <style lang="scss" scoped>
     .preview-ul li {
         padding: 5px 10px;
         cursor: pointer;
@@ -777,6 +775,7 @@
         .toolbar-label {
             margin-right: 30px;
             width: 120px;
+            height: 30px;
         }
     }
 
@@ -826,7 +825,6 @@
     }
 
     .button-catalog {
-        // background:#f2feff url(../../../assets/kms/images/folder-bg.png) no-repeat 50% 0px;
         background-image: url(../../../assets/kms/images/folder-bg.png);
         width: 210px;
         height: 114px;
@@ -854,5 +852,6 @@
         background-color: #fff;
         width: 300px;
     }
+
 </style>
     

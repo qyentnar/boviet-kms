@@ -6,116 +6,88 @@
             exist-back
             class="mb20">
         </breadcrumb-header>
-        <el-form :model="form">
-            <el-card class="card-box" ref="card-info">
+        <el-card class="card-box" ref="card-info" v-loading="loading">
                 <div slot="header" class="card-header">
                     <span>档案信息</span>
                 </div>
                 <el-row type="flex" justify="center">
                     <el-col :span="18">
-                        <el-descriptions :column="2" border size="mini">
+                        <el-descriptions :column="2" border >
                             <el-descriptions-item label="档案名称" :span="2">
-                                <el-input v-model="form.title" placeholder="请输入档案名称" size="mini" disabled/>
+                                <span>{{form.title}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="档案类型">
-                                <el-select v-model="form.attType" placeholder="请选择档案类型" size="mini" disabled>
-                                    <el-option v-for="(attType,index) in attTypeOptions" 
-                                            :key="index" 
-                                            :label="attType.label"
-                                            :value="attType.value"/>
-                                </el-select>
+                                <span>{{attTypeName}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="所属分类">
-                                <treeselect v-model="form.catalogId" :options="catalogOptions" :normalizer="normalizer" placeholder="所属分类" disabled/>
+                                <span>{{catalogTitle}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="所属区域">
-                                <el-select v-model="form.area" placeholder="请选择所属区域" size="mini" disabled>
-                                     <el-option v-for="(area,index) in areaOptions" 
-                                            :key="index" 
-                                            :label="area.areaName"
-                                            :value="area.areaName"/>
-                                </el-select>
+                                <span>{{form.area}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="归档人">
-                                <el-input v-model="form.archiver" placeholder="请输入归档人" size="mini" disabled/>
+                                <span>{{form.archiver}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="档案总称">
-                                <el-input v-model="form.generalName" placeholder="请输入档案总称" size="mini" disabled/>
+                                <span>{{form.generalName}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="档案材料内容">
-                                <el-input v-model="form.summary" placeholder="请输入档案材料内容" size="mini" disabled/>
+                                <span>{{form.summary}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="档案编号">
-                                <div class="el-input el-input--mini is-disabled">
-                                    <span class="el-input__inner">{{form.attCode}}</span>
-                                </div>
+                                <span>{{form.attCode}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="历史档案编号">
-                                <el-input v-model="form.attCodeH" placeholder="请输入历史档案编号" size="mini" disabled/>
+                                <span>{{form.attCodeH}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="归档日期">
-                                <el-date-picker v-model="form.createTime" placeholder="请输入归档日期" size="mini" disabled/>
+                                <span>{{form.createTime}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="资料形成日期">
-                                <el-date-picker v-model="form.attCreateTime" placeholder="请输入资料形成日期" size="mini" disabled/>
+                                <span>{{form.attCreateTime}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="保管期限">
-                                <el-select v-model="form.storageTime" placeholder="请选择保管期限" size="mini" disabled>
-                                  <el-option v-for="(storageTime,index) in storageTimeOptions" 
-                                    :key="index" 
-                                    :label="storageTime.label"
-                                    :value="storageTime.value" />
-                                </el-select>
+                                <span>{{storageTime}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="档案有效期">
-                                <el-date-picker v-model="form.attExpirationTime" placeholder="请输入档案有效期" size="mini" disabled/>
+                                <span>{{form.attExpirationTime}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="箱号">
-                                <el-input v-model="form.boxNo" placeholder="请输入箱号" size="mini" disabled/>
+                                <span>{{form.boxNo}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="盒号">
-                                <el-input v-model="form.boxesNo" placeholder="请输入盒号" size="mini" disabled/>
+                                <span>{{form.boxesNo}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="案卷号">
-                                <el-input v-model="form.attNumber" placeholder="请输入案卷号" size="mini" disabled/>
+                                <span>{{form.attNumber}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="目录号">
-                                <el-input v-model="form.catalogNumber" placeholder="请输入目录号" size="mini" disabled/>
+                                <span>{{form.catalogNumber}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="卷内序号">
-                                <el-input v-model="form.attSerialNumber" placeholder="请输入卷内序号" size="mini" disabled/>
+                                <span>{{form.attSerialNumber}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="密级程度">
-                                <el-select v-model="form.attClassification" placeholder="请选择密级程度" size="mini" disabled>
-                                  <el-option v-for="(attClassification, index) in attClassificationOptions" 
-                                    :key="index" 
-                                    :label="attClassification.label"
-                                    :value="attClassification.value"/>
-                                </el-select>
+                                <span>{{attClassificationName}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="件数/本">
-                                <el-input v-model="form.attCount" placeholder="请输入件数/本" size="mini" disabled/>
+                                <span>{{form.attCount}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="页数/页码">
-                                <el-input v-model="form.pageNumber" placeholder="请输入页数/页码" size="mini" disabled/>
+                                <span>{{form.pageNumber}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="保管单位">
-                                <el-select v-model="form.custodyUnit" placeholder="请选择保管单位" size="mini" disabled>
-                                  <el-option v-for="custodyUnit in custodyUnitOptions" 
-                                    :key="custodyUnit.id"
-                                    :label="custodyUnit.name"
-                                    :value="custodyUnit.name"/>
-                                </el-select>
+                                <span>{{form.custodyUnit}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="外部相关单位">
-                                <el-input v-model="form.externalUnit" placeholder="请输入外部相关单位" size="mini" disabled/>
+                                <span>{{form.externalUnit}}</span>
                             </el-descriptions-item>
                             <el-descriptions-item label="移交档案部门">
-                                <el-input v-model="form.filingDept" placeholder="请输入移交档案部门" size="mini" disabled/>
+                                <span>{{form.filingDept}}</span>
                             </el-descriptions-item>
-                            <el-descriptions-item></el-descriptions-item>
+                            <el-descriptions-item/>
                             <el-descriptions-item label="备注" :span="2">
-                                <el-input v-model="form.marks" placeholder="请输入备注" size="mini" disabled/>
+                                <span>{{form.marks}}</span>
                             </el-descriptions-item>
                         </el-descriptions>
                     </el-col>
@@ -126,97 +98,239 @@
                     <span>上转文件</span>
                 </div>
                 <el-row>
-                  <el-col :span="24" align="center">
-                    <file-upload @input="getFileList" :drag="true" :directory="directory" :value="form.filePath" />
-                  </el-col>
+                    <el-col class="mb8" :span="24" align="left" v-for="(item,index) in fileConverted" :key="index" >
+                        <el-tag @click="handleView(item)" class="tag-filename" effect="plain">
+                            <el-row style="width: 100%;">
+                                <el-col :span="20">
+                                    <span>{{ item.fileName }}.{{item.fileType}}</span>
+                                </el-col>
+                                <el-col :span="4" align="right">
+                                    <el-button icon="el-icon-search" circle size="mini" @click="handleView(item)"></el-button>
+                                    <el-button icon="el-icon-download" circle size="mini" @click="handleDownload"></el-button>
+                                </el-col>
+                            </el-row>
+                        </el-tag>
+                    </el-col>
                 </el-row>
             </el-card>
-        </el-form>
+            <el-card class="card-box" ref="card-process">
+                <div slot="header">
+                    <span>流程处理</span>
+                </div>
+                <el-tabs v-model="tabPaneProcessActive">
+                    <el-tab-pane name="process" label="流程处理" class="tab-pane-view">
+                        <div class="block">
+                            <el-timeline v-for="history in historyData" :key="history.activityName" :reverse="true">
+                                <el-timeline-item :timestamp="history.endTime" placement="top" v-if="history.completed">
+                                    <el-card style="width: 30%">
+                                        <el-tag type="success">
+                                            节点名称：{{history.activityName}}
+                                        </el-tag>
+                                        <div class="process-history-content">
+                                            <el-descriptions border size="mini" :column="1">
+                                                <el-descriptions-item label="操作者" style="width: 80px;">
+                                                    {{history.assignee}}
+                                                </el-descriptions-item>
+                                                <el-descriptions-item label="操作">
+                                                    {{history.operator}}
+                                                </el-descriptions-item>
+                                                <el-descriptions-item label="处理意见">
+                                                    {{history.comments}}
+                                                </el-descriptions-item>
+                                            </el-descriptions>
+                                        </div>
+                                    </el-card>
+                                </el-timeline-item>
+                            </el-timeline>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane name="process_status" label="流程状态" class="tab-pane-view">
+                        <el-row>
+                          <el-col :md="4" :sm="6" :xs="24" class="pr20 pl20">
+                            <div class="card-panel">
+                                <div class="card-panel-icon-wrapper icon-people">
+                                <svg-icon icon-class="peoples" class-name="card-panel-icon" />
+                                </div>
+                                <div class="card-panel-description">
+                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                                <div class="card-panel-text">
+                                    总人次
+                                </div>
+                                </div>
+                            </div>
+                          </el-col>
+                          <el-col :md="4" :sm="6" :xs="24">
+                            <div class="card-panel">
+                                <div class="card-panel-icon-wrapper icon-eye">
+                                <svg-icon icon-class="close-eye" class-name="card-panel-icon" />
+                                </div>
+                                <div class="card-panel-description">
+                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                                <div class="card-panel-text">
+                                    未查看
+                                </div>
+                                </div>
+                            </div>
+                          </el-col>
+                          <el-col :md="4" :sm="6" :xs="24">
+                            <div class="card-panel">
+                                <div class="card-panel-icon-wrapper icon-show">
+                                <svg-icon icon-class="show" class-name="card-panel-icon" />
+                                </div>
+                                <div class="card-panel-description">
+                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                                <div class="card-panel-text">
+                                    已查看
+                                </div>
+                                </div>
+                            </div>
+                          </el-col>
+                          <el-col :md="4" :sm="6" :xs="24">
+                            <div class="card-panel">
+                                <div class="card-panel-icon-wrapper icon-remove">
+                                <svg-icon icon-class="remove" class-name="card-panel-icon" />
+                                </div>
+                                <div class="card-panel-description">
+                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                                <div class="card-panel-text">
+                                    未提交
+                                </div>
+                                </div>
+                            </div>
+                          </el-col>
+                          <el-col :md="4" :sm="6" :xs="24">
+                            <div class="card-panel">
+                                <div class="card-panel-icon-wrapper icon-select">
+                                <svg-icon icon-class="select" class-name="card-panel-icon" />
+                                </div>
+                                <div class="card-panel-description">
+                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                                <div class="card-panel-text">
+                                    已提交
+                                </div>
+                                </div>
+                            </div>
+                          </el-col>
+                          <el-col :md="4" :sm="6" :xs="24">
+                            <div class="card-panel">
+                                <div class="card-panel-icon-wrapper icon-notification">
+                                <svg-icon icon-class="notification" class-name="card-panel-icon" />
+                                </div>
+                                <div class="card-panel-description">
+                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                                <div class="card-panel-text">
+                                    总催办次
+                                </div>
+                                </div>
+                            </div>
+                          </el-col>
+                        </el-row>
+                    </el-tab-pane>
+                    <el-tab-pane name="process_chart" label="流程图" class="tab-pane-view">
+                        <process-viewer :processData="processData" />
+                    </el-tab-pane>
+                    <el-tab-pane name="process_table" label="流程表格" class="tab-pane-view">
+
+                    </el-tab-pane>
+                    <el-tab-pane name="process_log" label="流程日志" class="tab-pane-view">
+                        
+                    </el-tab-pane>
+                </el-tabs>
+            </el-card>
+            <el-card class="card-box" ref="card-permission">
+                <div slot="header">
+                    <span>权限</span>
+                </div>
+            </el-card>
+            <el-card class="card-box" ref="card-statistics">
+                <div slot="header">
+                    <span>访问统计</span>
+                </div>
+                <el-table :data="kmsVisited">
+                  <el-table-column label="序号" type="index" width="68" />
+                  <el-table-column label="阅读人" align="center" prop="userVisited"/>
+                  <el-table-column label="阅读时间" align="center" prop="visitTime" />
+                  <el-table-column label="部门" align="center" prop="deptName" />
+                  <el-table-column label="阅读阶段" align="center" prop="readState" />
+                </el-table>
+                <pagination
+                    v-show="kmsVisitedTotal>0"
+                    :total="kmsVisitedTotal"
+                    :page.sync="kmsVisitQueryParams.pageNum"
+                    :limit.sync="kmsVisitQueryParams.pageSize"
+                    @pagination="getKmsVisit(form.id)"
+                />
+            </el-card>
+            <el-card class="card-box" ref="card-borrow">
+                <div slot="header">
+                    <span>借阅记录</span>
+                </div>
+            </el-card>
         <el-backtop />
     </div>
 </template>
 
 <script>
-    import { listCatalogForTree } from "@/api/kms/catalog";
+    import { getCatalog } from "@/api/kms/catalog";
     import { listArea } from "@/api/kms/area";
     import BreadcrumbHeader from "../../kms/components/breadcrumb-header";
     import { listCustodyUnit } from "@/api/kms/custody-unit";
-    import {addMain, getMain } from "@/api/kms/main";
+    import {addMain, getMain, previewAttFile } from "@/api/kms/main";
     import moment from 'moment'
     import Treeselect from "@riophae/vue-treeselect";
     import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+    
+    import { getAttachmentLevel } from "@/api/kms/attachment-level"
+    import { getAttachmentType } from "@/api/kms/attachment-type"
+    import { getStorageTime } from "@/api/kms/storage-time"
+    import { currentProcess, getTemplate } from "@/api/activiti/template"
+    import ProcessViewer from '@/views/activiti/components/process-viewer';
+    import CountTo from 'vue-count-to'
+    import { listKmsVisit } from '@/api/kms/kms-visit'
 
     export default {
         components:{
             BreadcrumbHeader,
-            Treeselect
+            Treeselect,
+            ProcessViewer,
+            CountTo
         },
         data() {
             return {
                 loading: false,
-                form:{
-                    createTime: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
-                    mainContent: '',
-                    author: {
-                        type: 'Internal',
-                        inside: [],
-                        external: [],
-                        check: false,
-                        checkText: ''
-                    },
-                },
+                form:{},
                 kmsCatalog:{},
-                attTypeOptions:[
-                    {
-                        value: "1",
-                        label: "电子"
-                    },
-                    {
-                        value: "2",
-                        label: "纸质"
-                    },
-                    {
-                        value: "3",
-                        label: "电子和纸质"
-                    }
-                ],
+                attTypeOptions:[],
                 areaOptions:[],
                 breadcrumbList: [
                     {
                     name: "档案录入",
                     },
                 ],
-                storageTimeOptions: [
-                    {
-                        value: "5",
-                        label: "短期"
-                    },
-                    {
-                        value: "10",
-                        label: "长期"
-                    },
-                    {
-                        value: "9999",
-                        label: "永久"
-                    }
-                ],
+                storageTimeOptions: [],
                 custodyUnitOptions:[],
                 attClassificationOptions:[
-                    {
-                        value: "1",
-                        label: "秘密"
-                    },
-                    {
-                        value: "2",
-                        label: "机密"
-                    },
-                    {
-                        value: "3",
-                        label: "绝密"
-                    }
+                    {id: 1, name: "秘密"},
+                    {id: 2, name: "机密"},
+                    {id: 3, name: "绝密"},
                 ],
                 catalogOptions:[],
                 directory:"",
+                catalogTitle:"",
+                attClassificationName:"",
+                attTypeName:"",
+                storageTime:"",
+                tabPaneProcessActive:"process",
+                processList:[],
+                historyData:[],
+                processData:{},
+                fileConverted:[],
+                kmsVisitQueryParams: {
+                    pageNum: 1,
+                    pageSize: 10,
+                },
+                kmsVisited:[],
+                kmsVisitedTotal: 0,
             }
         },
         created(){
@@ -227,28 +341,88 @@
         methods:{
             getKmsMain(){
                 const id = this.$route.params && this.$route.params.id
-                if(id){
-                    getMain(id).then(res => {
-                        const data = res.data
-                        this.form = data
-                        this.form.currentVersionId = this.form.id
-                        this.form.id = null
-                        listCatalogForTree().then(res => {
-                            const catalogs = res.data
-                            this.catalogOptions = this.handleTree(catalogs,"id")
-                            this.directory = catalogs.filter(item => item.id == this.form.catalogId)[0].title
-                        })
+                getMain(id).then(res => {
+                    const data = res.data
+                    this.form = data
+                    getCatalog(this.form.catalogId).then(res => {
+                        const catalog = res.data
+                        if(catalog != null) {
+                            this.catalogTitle = catalog.title
+                            getTemplate(catalog.templateId).then(response =>{
+                                const template = response.data;
+                                if(template.processDefXml == undefined || template.processDefXml == ""){
+                                    this.$message.error("没有找到模板");
+                                }else{
+                                    this.processData.xmlData = template.processDefXml
+                                }
+                            })
+                        }
                     })
+
+                    if(this.form.attClassification != null){
+                        this.form.attClassificatio = this.attClassificationOptions.filter(item => item.id == this.form.attClassification)[0].name
+                    }
+
+                    if(this.form.attType != null){
+                        getAttachmentType(this.form.attType).then(res => {
+                            const data = res.data
+                            if(data != null) {
+                                this.attTypeName = data.name
+                            }
+                        })
+                    }
+                    
+                    if(this.form.storageTime != null){
+                        getStorageTime(this.form.storageTime).then(res => {
+                            const data = res.data
+                            if(data != null) {
+                                this.storageTime = data.name
+                            }
+                        })
+                    }
+
                     listArea().then(res => {
                         this.areaOptions = res.rows
                     })
                     listCustodyUnit().then(res => {
                         this.custodyUnitOptions = res.rows
                     })
-                }else{
-                    this.gotoBack()
-                }
+
+                    if(this.form.filePath.length > 0){
+                        this.form.fileNames = this.form.fileName.split(",")
+                    }
+
+                    currentProcess(this.form.processInstanceId).then(response => {
+                        const findHistory = response.data;
+                        this.historyData = findHistory
+                        this.historyData.forEach(item => {
+                            if(item.class == "startEvent"){
+                                this.historyData.fdAssignee = ""
+                            }
+                        });
+                        this.processData.nodeData = findHistory
+                    })
+
+                    previewAttFile(this.form.id).then(res => {
+                        const data = res.data
+                        if(data != null){
+                            this.fileConverted = data
+                        }
+                    })
+
+                    this.getKmsVisit(this.form.id);
+                    
+                })
                 
+            },
+            getKmsVisit(id){
+                const params = {
+                    kmsId: id
+                }
+                listKmsVisit(params).then(res => {
+                    this.kmsVisited = res.rows
+                    this.kmsVisitedTotal = res.total
+                })
             },
             gotoBack(){
                 this.$router.back()
@@ -301,6 +475,8 @@
                     this.form.updateUserId = null
                     this.form.attCreateTime = moment(this.form.attCreateTime).format("YYYY-MM-DD HH:mm:ss")
                     this.form.attExpirationTime = moment(this.form.attExpirationTime).format("YYYY-MM-DD HH:mm:ss")
+                    this.form.currentVersionId = this.form.id
+                    this.form.id = null
                     addMain(this.form).then(response => {
                         this.$modal.msgSuccess("新增成功");
                         this.loading = false;
@@ -323,11 +499,27 @@
                     children: node.children
                 };
             },
+            handleView(item){
+                console.log(item.converted)
+                this.$router.push( {
+                    name: "kms-view",
+                    query: {
+                        filePath: item.converted
+                    }
+                });
+            },
+            handleDownload(){
+
+            }
         }
     }
 </script>
 
 <style lang="scss" scoped>
+    .app-container {
+        background-color: #eff1f4;
+    }
+
     .card-header {
         display: flex;
         justify-content: center;
@@ -347,4 +539,125 @@
         padding: 5px 0;
         margin-bottom: 20px;
     }
+    
+    .tag-filename {
+        cursor: pointer;
+        width: 100%;
+        height: 48px;
+        display: flex;
+        align-items: center;
+    }
+
+    .operator{
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
+
+    .process-history-content {
+        margin-top: 20px;
+        margin-left: 30px;
+    }
+
+    .card-status {
+        background-color: #f7f7f7;
+    }
+
+    .img-box {
+        background-color: #D4997B;
+        width: 68px;
+        height: 68px;
+        padding: 10px;
+    }
+
+    .img-status {
+        width: 48px;
+        height: 48px;
+    }
+
+
+
+    .card-panel {
+        height: 108px;
+        cursor: pointer;
+        font-size: 12px;
+        position: relative;
+        overflow: hidden;
+        color: #666;
+        background: #eff1f4;
+        //box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
+        border-color: rgba(0, 0, 0, .05);
+        margin: 15px 10px;
+
+        &:hover {
+        box-shadow: 5px 7px 20px grey;
+        }
+
+        .icon-people {
+            color: #fff;
+            background: #d4997b;
+        }
+        .icon-eye {
+            color: #fff;
+            background: #82b2d1;
+        }
+
+        .icon-show {
+            color: #fff;
+            background: #82b2d1;
+        }
+
+        .icon-remove {
+            color: #fff;
+            background: #92c18f;
+        }
+
+        .icon-select {
+            color: #fff;
+            background: #92c18f;
+        }
+
+        .icon-notification {
+            color: #fff;
+            background: #c0a1cd;
+        }
+
+        .card-panel-icon-wrapper {
+        float: left;
+        margin: 14px 0 0 14px;
+        padding: 16px;
+        transition: all 0.38s ease-out;
+        border-radius: 6px;
+        }
+
+        .card-panel-icon {
+            float: left;
+            font-size: 48px;
+        }
+
+        .card-panel-description {
+        float: right;
+        font-weight: bold;
+        margin: 26px;
+        margin-left: 0px;
+
+        .card-panel-text {
+            line-height: 18px;
+            color: rgba(0, 0, 0, 0.45);
+            font-size: 16px;
+            margin-bottom: 12px;
+            margin-top: 12px;
+        }
+
+        .card-panel-num {
+            font-size: 20px;
+        }
+    }
+  }
+
+.tab-pane-view {
+    height: 540px;
+    overflow: auto;
+}
+
 </style>

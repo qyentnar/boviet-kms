@@ -68,7 +68,7 @@ public interface ISysActivitiTemplateService
 
     public List<Map<String,Object>> findMyTaskList(String processInstanceId,String assignee);
 
-    public void completeTask(SysActivitiApprove sysActivitiApprove);
+    public Boolean completeTask(SysActivitiApprove sysActivitiApprove);
 
     public List<Map<String,Object>> findHistory(String processInstanceId);
 
@@ -76,7 +76,7 @@ public interface ISysActivitiTemplateService
 
     public List<Map<String, Object>> findAllTasks();
 
-    public List<Map<String,Object>> processHistory(String processInstanceId);
+    public List<Map<String,Object>> currentProcess(String processInstanceId);
 
     public SysActivitiTemplate getTemplate(Long id);
 }

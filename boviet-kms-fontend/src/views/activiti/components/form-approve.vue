@@ -10,16 +10,16 @@
                 </el-form-item>
                 <el-form-item label="操作" prop="handle">
                     <el-radio-group v-model="form.handle" style="padding-left: 0px;">
-                        <el-radio label="通过"></el-radio>
+                        <el-radio label="通过" name=""></el-radio>
                         <el-radio label="驳回"></el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="驳回到" style="margin-bottom: 20px" v-if="refuseTo" prop="nodeValue">
+                <!-- <el-form-item label="驳回到" style="margin-bottom: 20px" v-if="refuseTo" prop="nodeValue">
                     <el-select v-model="form.nodeValue" placeholder="请选择" size="small">
                         <el-option v-for="(item,index) in rejectApprovalNode" :key="index" :label="item.approvalNodeName" :value="item.approvalNodeId">
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="处理意见" prop="desc">
                     <el-col :span="18" class="activiti-desc-height">
                         <el-input type="textarea" v-model="form.desc"></el-input>
@@ -29,14 +29,14 @@
         </el-tab-pane>
         <el-tab-pane label="审批记录" name="history">
             <div class="block">
-                <el-timeline v-for="history in historyData" :key="history.fdActivityName" :reverse="true">
-                    <el-timeline-item :timestamp="history.fdEndTime" placement="top" v-if="history.completed">
+                <el-timeline v-for="history in historyData" :key="history.activityName" :reverse="true">
+                    <el-timeline-item :timestamp="history.endTime" placement="top" v-if="history.completed">
                         <el-card>
                             <el-tag type="success">
-                                {{history.fdActivityName}}
+                                {{history.activityName}}
                             </el-tag>
                             <div style="margin-left: 20px;">
-                                <p>Assignee: {{history.fdAssignee}}</p>
+                                <p>Assignee: {{history.assignee}}</p>
                                 <p>Comment: {{history.comments}}</p>
                             </div>
                         </el-card>
@@ -71,7 +71,7 @@ import {
     completeTask
 } from '@/api/activiti/template';
 
-import ProcessViewer from './process-viewer.vue';
+import ProcessViewer from './process-viewer';
 
 export default {
     name: "form-approve",
@@ -246,11 +246,11 @@ export default {
                 comment: this.form.desc
             }
             completeTask(data).then(response => {
-                if (response.message == undefined || response.message == "") {
-                    this.$modal.msgError(response.message)
+                if (response.msg == undefined || response.msg == "") {
+                    this.$modal.msgError(response.msg)
                 } else {
                     this.$emit('task-completed');
-                    this.$modal.msgSuccess("审批成功");
+                    this.$modal.msgSuccess("批准成功");
                 }
             })
         },

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.kms.mapper.KmsUsergroupMapper">
+    
+    <resultMap type="KmsUsergroup" id="KmsUsergroupResult">
+        <result property="id"    column="id"    />
+        <result property="groupId"    column="group_id"    />
+        <result property="userIds"    column="user_ids"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectKmsUsergroupVo">
+        select id, group_id, user_ids, del_flag, create_by, create_time, update_by, update_time, remark from kms_usergroup
+    </sql>
+
+    <select id="selectKmsUsergroupList" parameterType="KmsUsergroup" resultMap="KmsUsergroupResult">
+        <include refid="selectKmsUsergroupVo"/>
+        <where>  
+            <if test="groupId != null "> and group_id = #{groupId}</if>
+            <if test="userIds != null  and userIds != ''"> and user_ids = #{userIds}</if>
+        </where>
+    </select>
+    
+    <select id="selectKmsUsergroupById" parameterType="Long" resultMap="KmsUsergroupResult">
+        <include refid="selectKmsUsergroupVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertKmsUsergroup" parameterType="KmsUsergroup" useGeneratedKeys="true" keyProperty="id">
+        insert into kms_usergroup
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupId != null">group_id,</if>
+            <if test="userIds != null">user_ids,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupId != null">#{groupId},</if>
+            <if test="userIds != null">#{userIds},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKmsUsergroup" parameterType="KmsUsergroup">
+        update kms_usergroup
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="groupId != null">group_id = #{groupId},</if>
+            <if test="userIds != null">user_ids = #{userIds},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteKmsUsergroupById" parameterType="Long">
+        delete from kms_usergroup where id = #{id}
+    </delete>
+
+    <delete id="deleteKmsUsergroupByIds" parameterType="String">
+        delete from kms_usergroup where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

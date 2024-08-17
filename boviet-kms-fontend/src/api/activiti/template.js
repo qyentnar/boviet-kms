@@ -74,9 +74,9 @@ export function findAllNodes(key) {
   })
 }
 
-export function processHistory(key) {
+export function currentProcess(key) {
   return request({
-    url: '/sys/activiti/template/processHistory/' + key,
+    url: '/sys/activiti/template/currentProcess/' + key,
     method: 'get'
   })
 }

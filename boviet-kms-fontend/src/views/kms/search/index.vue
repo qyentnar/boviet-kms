@@ -237,132 +237,6 @@
           this.tagList = tagListOrg.slice(0,50);
           this.onReady();
         },
-        // 生成随机数
-        getRandomNum() {
-          return Math.floor(Math.random() * (255 + 1));
-        },
-        doPosition() {
-          this.$nextTick(() => {            // 注意: 所有的在onReady方法中执行的方法都需要$nextTick确保所有的标签都已经渲染
-            var l = this.oList.offsetWidth / 2;
-            var t = this.oList.offsetHeight / 2;
-            for (var i = 0; i < this.mcList.length; i++) {
-              if (this.mcList[i].on) {
-                continue;
-              }
-              var aAs = this.oA[i].style;
-              if (this.mcList[i].alpha > 0.1) {
-                if (aAs.display != '')
-                  aAs.display = '';
-              } else {
-                if (aAs.display != 'none')
-                  aAs.display = 'none';
-                continue;
-              }
-              this.oA[i].style.left = this.mcList[i].cx + l - this.mcList[i].offsetWidth / 2 + 'px';
-              this.oA[i].style.top = this.mcList[i].cy + t - this.mcList[i].offsetHeight / 2 + 120 + 'px';
-              this.oA[i].filter = "alpha(opacity=" + 100 * this.mcList[i].alpha + ")";
-              this.oA[i].zIndex = this.mcList[i].zIndex;
-  
-              this.oA[i].style.opacity = this.mcList[i].alpha;
-            }
-  
-          })
-        },
-        update() {
-  
-          this.$nextTick(() => {           // 注意: 所有的在onReady方法中执行的方法都需要$nextTick确保所有的标签都已经渲染
-            var a, b, c = 0;
-  
-            a = (Math.min(Math.max(-this.mouseY, -this.size), this.size) / this.radius) * this.tspeed;
-            b = (-Math.min(Math.max(-this.mouseX, -this.size), this.size) / this.radius) * this.tspeed;
-  
-            this.lasta = a;
-            this.lastb = b;
-            if (Math.abs(a) <= 0.01 && Math.abs(b) <= 0.01) {
-              return
-            }
-            this.sineCosine(a, b, c);
-            for (var j = 0; j < this.mcList.length; j++) {
-              if (this.mcList[j].on) {
-                continue;
-              }
-              var rx1 = this.mcList[j].cx;
-              var ry1 = this.mcList[j].cy * this.ca + this.mcList[j].cz * (-this.sa);
-              var rz1 = this.mcList[j].cy * this.sa + this.mcList[j].cz * this.ca;
-              var rx2 = rx1 * this.cb + rz1 * this.sb;
-              var ry2 = ry1;
-              var rz2 = rx1 * (-this.sb) + rz1 * this.cb;
-              var rx3 = rx2 * this.cc + ry2 * (-this.sc);
-              var ry3 = rx2 * this.sc + ry2 * this.cc;
-              var rz3 = rz2;
-              this.mcList[j].cx = rx3;
-              this.mcList[j].cy = ry3;
-              this.mcList[j].cz = rz3;
-              var per = this.d / (this.d + rz3);
-              this.mcList[j].x = (this.howElliptical * rx3 * per) - (this.howElliptical * 2);
-              this.mcList[j].y = ry3 * per;
-              this.mcList[j].scale = per;
-  
-              //this.mcList[j].alpha = per;
-              //this.mcList[j].alpha = (this.mcList[j].alpha - 0.6) * (10 / 6);
-  
-              var alpha = per;
-              alpha = (alpha - 0.6) * (10 / 6);
-              this.mcList[j].alpha = alpha * alpha * alpha - 0.2;
-              this.mcList[j].zIndex = Math.ceil(100 - Math.floor(this.mcList[j].cz));
-            }
-            this.doPosition();
-          })
-        },
-        positionAll() {
-  
-          this.$nextTick(() => {      // 注意: 所有的在onReady方法中执行的方法都需要$nextTick确保所有的标签都已经渲染
-            var phi = 0;
-            var theta = 0;
-            var max = this.mcList.length;
-            var aTmp = [];
-            var oFragment = document.createDocumentFragment();
-            // 随机排序
-            for (let i = 0; i < this.tagList.length; i++) {
-              aTmp.push(this.oA[i]);
-            }
-            aTmp.sort(() => {
-              return Math.random() < 0.5 ? 1 : -1;
-            });
-            for (let i = 0; i < aTmp.length; i++) {
-              oFragment.appendChild(aTmp[i]);
-            }
-            this.oList.appendChild(oFragment);
-  
-            for (var i = 0; i < max; i++) {
-              if (this.distr) {
-                phi = Math.acos(-1 + (2 * (i + 1) - 1) / max);
-                theta = Math.sqrt(max * Math.PI) * phi;
-              } else {
-                phi = Math.random() * (Math.PI);
-                theta = Math.random() * (2 * Math.PI);
-              }
-  
-              //坐标变换
-              this.mcList[i].cx = this.radius * Math.cos(theta) * Math.sin(phi);
-              this.mcList[i].cy = this.radius * Math.sin(theta) * Math.sin(phi);
-              this.mcList[i].cz = this.radius * Math.cos(phi);
-  
-              this.oA[i].style.left = this.mcList[i].cx + this.oList.offsetWidth / 2
-                - this.mcList[i].offsetWidth / 2 + 'px';
-              this.oA[i].style.top = this.mcList[i].cy + this.oList.offsetHeight / 2
-                - this.mcList[i].offsetHeight / 2 + 'px';
-            }
-          })
-        },
-        sineCosine(a, b, c) {
-          this.sa = Math.sin(a * this.dtr);
-          this.ca = Math.cos(a * this.dtr);
-          this.sb = Math.sin(b * this.dtr);
-          this.cb = Math.cos(b * this.dtr);
-          this.sc = Math.sin(c * this.dtr);
-          this.cc = Math.cos(c * this.dtr);
-        },
   
         /** 查询知识列表 */
         searchList() {
@@ -455,23 +329,10 @@
       border-radius: 3px;
     }
   
-    /* #tagscloud a.tagc1{color:#666;opacity: 0.68293;  padding: 5px;}
-    #tagscloud a.tagc2{color:#F16E50;opacity: 0.68293; padding: 5px;}
-    #tagscloud a.tagc3{color:#83c325;opacity: 0.68293;  padding: 5px;}
-    #tagscloud a.tagc4{color:#0F6098;opacity: 0.68293;  padding: 5px;}
-    #tagscloud a.tagc5{color:#006633;opacity: 0.68293;  padding: 5px;} */
     #tagscloud a:hover {
       background: #fff;
       border: 1px solid #1f95df;
     }
-  
-    /* .label {
-        display: inline-block;
-        margin: 0 10px 0 0;
-        min-width:60px;
-        max-width:120px;
-        text-align: right;
-    } */
   
     .literature_index {
       width: 100%;

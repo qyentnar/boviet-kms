@@ -124,8 +124,7 @@ public class SysActivitiTemplateController extends BaseController
     @PostMapping(value = "/completeTask")
     public AjaxResult completeTask(@RequestBody SysActivitiApprove sysActivitiApprove)
     {
-        sysActivitiTemplateService.completeTask(sysActivitiApprove);
-        return AjaxResult.success();
+        return AjaxResult.success(sysActivitiTemplateService.completeTask(sysActivitiApprove));
     }
 
     @GetMapping(value = "/findHistory/{processInstanceId}")
@@ -144,9 +143,9 @@ public class SysActivitiTemplateController extends BaseController
         return AjaxResult.success(sysActivitiTemplateService.findAllTasks());
     }
 
-    @GetMapping("/processHistory/{processInstanceId}")
-    public AjaxResult processHistory(@PathVariable("processInstanceId") String processInstanceId) {
-        return AjaxResult.success(sysActivitiTemplateService.processHistory(processInstanceId));
+    @GetMapping("/currentProcess/{processInstanceId}")
+    public AjaxResult currentProcess(@PathVariable("processInstanceId") String processInstanceId) {
+        return AjaxResult.success(sysActivitiTemplateService.currentProcess(processInstanceId));
     }
     
     @GetMapping("/getTemplate/{id}")

@@ -15,9 +15,11 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.kms.domain.KmsMain;
+import com.ruoyi.kms.domain.KmsMainVisit;
 import com.ruoyi.kms.service.IKmsMainService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+
 
 
 /**
@@ -149,4 +151,18 @@ public class KmsMainController extends BaseController
         List<KmsMain> list = kmsMainService.listVerson(kmsId);
         return AjaxResult.success(list);
     }
+
+    @PostMapping("/kmsReader")
+    public AjaxResult kmsReader(@RequestBody KmsMainDto kmsMainDto) {
+        
+        KmsMainVisit kmsMainVisit = new KmsMainVisit();
+        kmsMainVisit.setKmsId(kmsMainDto.getId());
+        kmsMainVisit.setUserVisited(getUsername());
+        kmsMainVisit.setCreateBy(getUsername());
+        kmsMainVisit.setUpdateBy(getUsername());
+
+        kmsMainDto.setUpdateBy(getUsername());
+        return toAjax(kmsMainService.kmsReader(kmsMainDto, kmsMainVisit));
+    }
+    
 }
