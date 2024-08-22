@@ -39,6 +39,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
+    <select id="selectKmsRoleByKmsId" parameterType="String" resultMap="KmsRoleResult">
+        <include refid="selectKmsRoleVo"/>
+        where kms_id = #{id}
+    </select>
     <insert id="insertKmsRole" parameterType="KmsRole" useGeneratedKeys="true" keyProperty="id">
         insert into kms_role
         <trim prefix="(" suffix=")" suffixOverrides=",">

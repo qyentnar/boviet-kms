@@ -4,94 +4,13 @@
             <el-tab-pane label="我录入的" name="my-attachment">
                 <el-row type="flex" justify="end">
                   <el-col :span="12">
-                    <el-input v-model="queryParams.title" placeholder="请输入档案名称" class="input-with-select" clearable>
+                    <el-input v-model="queryParams.title" placeholder="请输入档案名称" class="input-with-select" clearable @clear="handleQuery" @keyup.enter.native="handleQuery">
                         <template slot="prepend">档案名称: </template>
                         <el-button slot="append" icon="el-icon-search" @click="handleQuery"></el-button>
                     </el-input>
                   </el-col>
                 </el-row>
-                <el-card v-show="showSearch" :style="`margin-bottom: 30px`">
-                    <el-row class="search-input">
-                        <el-col :md="12" :sm="24" :xs="24">
-                            <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px">
-                                <el-row>
-                                    <el-col :span="24">
-                                        <el-form-item prop="catalogId">
-                                            <div class="search-toolbar">
-                                                <el-dropdown class="dropdown-list" @command="handleCatalogSelected" trigger="click" size="mini">
-                                                    <el-button style="width: 120px;" size="mini">
-                                                        所属分类 <i class="el-icon-arrow-down el-icon--right"></i>
-                                                    </el-button>
-                                                    <el-dropdown-menu slot="dropdown" >
-                                                        <el-dropdown-item v-for="catalog in catalogOptions" :key="catalog.id" :command="catalog.id">{{catalog.title}}</el-dropdown-item>
-                                                    </el-dropdown-menu>
-                                                </el-dropdown>
-                                                <div v-for="catalog in catalogOptions" :key="catalog.id">
-                                                    <el-button :type="buttonType" plain size="mini" @click="handleCatalogSelected(catalog.id)" style="margin-right: 20px;">
-                                                        {{catalog.title}} <i class="el-icon-back el-icon--right" v-if="catalog.id === catalogSelected"/>
-                                                    </el-button>
-                                                </div>
-                                            </div>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="24" style="margin-top: -20px;">
-                                        <div class="search-toolbar">
-                                            <span class="toolbar-label">
-                                                档案编号
-                                            </span>
-                                            <el-input v-model="attCode" clearable  placeholder="请输入档案编号" size="mini" style="width: 350px;" @input="handleAttCodeInput">
-                                                <el-button v-show="showBtnAttCodeSearch" :slot="showBtnAttCodeSearch ? 'append': ''" icon="el-icon-search" @click="handleAttCodeSearch"/>
-                                            </el-input>
-                                        </div>
-                                    </el-col>
-                                    <el-col :span="24">
-                                        <div class="search-toolbar">
-                                            <span class="toolbar-label">
-                                                归档日期
-                                            </span>
-                                            <div class="block">
-                                                <el-date-picker
-                                                    v-model="dateRange"
-                                                    type="daterange"
-                                                    align="left"
-                                                    unlink-panels
-                                                    range-separator="到"
-                                                    start-placeholder="开始时间"
-                                                    end-placeholder="结束时间"
-                                                    :picker-options="pickerOptions" 
-                                                    @change="handleQuery"
-                                                    size="mini"/>
-                                            </div>
-                                        </div>
-                                    </el-col>
-                                </el-row>
-                            </el-form>
-                        </el-col>
-                        <el-col :md="12" :sm="24" :xs="24">
-                            <div>
-                                <el-tag closable @close="handleCloseTag(1)" v-if="queryParams.catalogId.length > 0" type="warning" effect="dark" style="margin-right: 10px;">
-                                    <span v-for="(catalog,index) in catalogList.filter(item => queryParams.catalogId.includes(item.id))" :key="index">
-                                        <span v-if="index <= 0">
-                                            所属分类: 
-                                        </span>
-                                        <span>
-                                            {{catalog.title}}
-                                        </span>
-                                        <span v-if="index >= 0 && index < catalogList.filter(item => queryParams.catalogId.includes(item.id)).length - 1">
-                                            >
-                                        </span>
-                                    </span>
-                                </el-tag>
-                                <el-tag closable @close="handleCloseTag(2)" v-if="queryParams.attCode.length > 0" type="warning" effect="dark" style="margin-right: 10px;">
-                                    档案编号: {{queryParams.attCode}}
-                                </el-tag>
-                                <el-tag closable @close="handleCloseTag(3)" v-if="queryParams.searchTimes != null" type="warning" effect="dark">
-                                    归档日期: {{queryParams.searchTimes.start}} ~ {{queryParams.searchTimes.end}}
-                                </el-tag>
-                            </div>
-                        </el-col>
-                    </el-row>
-                </el-card>
+                <search-toolbar  v-show="showSearch" @change="handleChanged"/>
                 <el-row :gutter="10" class="mb8" style="margin-right: 10px;">
                     <el-col :span="1.5">
                         <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['kms:main:add']">新增</el-button>
@@ -110,9 +29,10 @@
                     </el-col>
                     <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
                 </el-row>
-                <el-table ref="dataTable" v-loading="loading" :data="mainList" @selection-change="handleSelectionChange">
+                <el-table ref="dataTable" v-loading="loading" :data="mainList" @selection-change="handleSelectionChange" :default-sort = "{prop: 'createTime'}">
                     <el-table-column type="selection" width="55" align="center" />
-                    <el-table-column label="主键ID" align="center" prop="id" width="55"/>
+                    <!-- <el-table-column label="主键ID" align="center" type="index" width="120"/> -->
+                    <el-table-column label="主键ID" type="index" width="60" align="center"/>
                     <el-table-column label="档案名称" align="center" prop="title" />
                     <el-table-column label="档案编号" align="center" prop="attCode" />
                     <el-table-column label="归档人" align="center" prop="archiver" />
@@ -178,7 +98,7 @@
                     </el-row>
             </el-tab-pane>
             <el-tab-pane :label="`草稿箱 (${totalTemp})`">
-                <el-table ref="dataTableTemp" v-loading="loading" :data="mainListTemp" @selection-change="handleSelectionChange">
+                <el-table ref="dataTableTemp" v-loading="loading" :data="mainListTemp" @selection-change="handleSelectionChange" >
                     <el-table-column type="selection" width="55" align="center" />
                     <el-table-column label="主键ID" align="center" prop="id"/>
                     <el-table-column label="档案名称" align="center" prop="title" />
@@ -260,17 +180,19 @@
     
     <script>
     import { listMain, getMain, delMain, previewAttFile, startProcess, listMainTemp } from "@/api/kms/main";
-    import { listCatalogForTree, listCatalog, treeselect } from "@/api/kms/catalog";
+    import { listCatalog, treeselect } from "@/api/kms/catalog";
     import Treeselect from "@riophae/vue-treeselect";
     import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-    import documentViewer from "../components/document-viewer";
-    import moment from 'moment'
+    import DocumentViewer from "../components/document-viewer";
+    import SearchToolbar from "../components/search/search-toolbar";
     
     export default {
         name: "Kms-main",
         components: {
             Treeselect,
-            documentViewer},
+            DocumentViewer,
+            SearchToolbar
+        },
         data() {
             return {
                 loading: true,
@@ -287,23 +209,16 @@
                 pdfUrl: "",
                 baseUrl: process.env.VUE_APP_BASE_API,
                 mainTabs:"my-attachment",
-                buttonType: "primary",
-                catalogSelected: null,
-                catalogList: [],
-                attCode: "",
                 catalogName:"",
-                dateRange : null,
-                showBtnAttCodeSearch: false,
                 catalogTreeSelect:[],
                 openPreview: false,
                 previewFile: [],
-                catalogOptions: [],
                 buttonCatalogs:[],
                 queryParams: {
                     pageNum: 1,
                     pageSize: 10,
                     title: null,
-                    catalogId: [],
+                    catalogId: null,
                     deptId: null,
                     mainContent: null,
                     summary: null,
@@ -315,8 +230,8 @@
                     readCount: null,
                     createUser: null,
                     updateUser: null,
-                    createTime: [],
-                    attCode: ""
+                    createTime: null,
+                    attCode: null
                 },
                 // 表单参数
                 form: {
@@ -366,53 +281,6 @@
                         }
                     ]
                 },
-                pickerOptions: {
-                    shortcuts: [{
-                        text: '近一周',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, 
-                    {
-                        text: '近一个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    },
-                    {
-                        text: '近三个月',
-                        onClick(picker) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setMonth(start.getMonth() - 3);
-                        picker.$emit('pick', [start, end]);
-                        },
-                    },
-                    {
-                        text: '近半年',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setMonth(start.getMonth() - 6);
-                            picker.$emit('pick', [start, end]);
-                        },
-                    },
-                    {
-                        text: '近一年',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setFullYear(start.getFullYear() - 1);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }]
-                },
                 defaultProps: {
                     children: 'children',
                     label: 'label'
@@ -459,8 +327,6 @@
                 });
                 listCatalog().then(response => {
                     if(response.rows.length > 0){
-                        this.catalogOptions = this.handleTree(response.rows, "id");
-                        this.catalogList = response.rows;
                         this.getCatalogUsed();
                     }
                 });
@@ -514,16 +380,6 @@
             },
             /** 搜索按钮操作 */
             handleQuery() {
-                this.queryParams.searchTimes = null;
-                if(this.dateRange != null && this.dateRange != ""){
-                    const start = moment(this.dateRange[0]).format('YYYY-MM-DD')
-                    const end = moment(this.dateRange[1]).format('YYYY-MM-DD')
-                    this.queryParams.searchTimes = {
-                        start: start,
-                        end: end
-                    }
-                }
-                this.queryParams.pageNum = 1;
                 this.getList();
             },
             /** 重置按钮操作 */
@@ -547,9 +403,11 @@
                 })
             },
             handleUpdate(row){
-                const ids = row.id || this.ids;
                 this.$router.push({
-                    path: '/kms/attachment/edit/' + ids
+                    path: '/kms/attachment/edit',
+                    query: {
+                        attachmentId: row.id || this.ids
+                    }
                 })
             },
             /** 删除按钮操作 */
@@ -622,10 +480,14 @@
             /** 查看详情操作 */
             handleView(row){
                 this.$router.push({
-                    path: '/kms/attachment/view/' + row.id
+                    path: '/kms/attachment/view',
+                    query: {
+                        attachmentId: row.id
+                    }
                 })
             },
             handleStartProcess(row){
+                console.log(row.id);
                 startProcess(row.id).then(res => {
                     if (res.msg == null){
                         this.$message.error("启动流程失败");
@@ -635,60 +497,6 @@
                         this.getListTemp();
                     }
                 })
-            },
-            handleCatalogSelected(catalogId){
-                const catalogIds = this.queryParams.catalogId
-                if(catalogIds.indexOf(catalogId) == -1){
-                    this.queryParams.catalogId.push(catalogId)
-                }else {
-                    this.queryParams.catalogId.splice(this.queryParams.catalogId.indexOf(catalogId), 1)
-                }
-                const lastSelected = this.queryParams.catalogId.slice(-1)[0]
-                this.catalogSelected = lastSelected
-                if(lastSelected === null || lastSelected === undefined) {
-                    listCatalog().then(response => {
-                        this.catalogOptions = this.handleTree(response.rows,"id")
-                    })
-                }else{
-                    listCatalog().then(response => {
-                        if(response.rows != null && response.rows.length){
-                            const data = response.rows
-                            this.catalogOptions = data.filter(catelog => {
-                                return catelog.parentId === lastSelected || catelog.id === lastSelected;
-                            })
-                        }
-                    })
-                }
-            },
-            handleCloseTag(index){
-                switch(index){
-                    case 1:
-                        this.queryParams.catalogId = []
-                        this.catalogSelected = null
-                        listCatalogForTree().then(response => {
-                            this.catalogOptions = this.handleTree(response.data, "id")
-                        });
-                        break;
-                    case 2:
-                        this.queryParams.attCode = ""
-                        break;
-                    case 3:
-                        this.dateRange = null;
-                        this.queryParams.searchTimes = null
-                        break;
-                }
-                console.log(this.queryParams.searchTimes)
-                this.handleQuery();
-            },
-            handleAttCodeSearch(){
-                this.queryParams.attCode = this.attCode
-            },
-            handleAttCodeInput(input){
-                if(input !== null && input !== ""){
-                    this.showBtnAttCodeSearch = true;
-                }else {
-                    this.showBtnAttCodeSearch = false;
-                }
             },
             filterNode(value, row) {
                 if (!value) return true
@@ -700,13 +508,19 @@
                     return false;
                 }else{
                     this.$router.push({
-                        path: '/kms/attachment/add/' + this.form.catalogId
+                        name: 'attachment-add',
+                        params:{
+                            catalogId: this.form.catalogId
+                        }
                     })
                 } 
             },
             handleCatalogClick(catalogId){
                 this.$router.push({
-                    path: '/kms/attachment/add/' + catalogId
+                    name: 'attachment-add',
+                    params:{
+                        catalogId: catalogId
+                    }
                 })
             },
             handleNodeClick(node){
@@ -739,13 +553,16 @@
                 }
             },
             handleNewVersion(row){
-                const ids = row.id || this.ids;
                 this.$router.push({
-                    path: '/kms/attachment/new-version/' + ids
+                    path: '/kms/attachment/new-version',
+                    query: {
+                        attachmentId: row.id || this.ids
+                    }
                 })
             },
-            handleCommand(command){
-                console.log("test",command)
+            handleChanged(data){
+                this.queryParams = data
+                this.handleQuery();
             }
         }
     };
@@ -808,11 +625,6 @@
 
     .input-with-select {
         margin-bottom: 15px;
-    }
-
-    .el-descriptions-row th{
-        width: 10%;
-        text-align: center !important;
     }
 
     .footer {

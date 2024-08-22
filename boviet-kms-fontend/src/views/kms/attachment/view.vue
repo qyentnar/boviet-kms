@@ -1,5 +1,6 @@
 <template>
-    <div class="app-container">
+<div>
+    <div class="app-container" v-if="form != null">
         <breadcrumb-header
             :breadcrumbList="breadcrumbList"
             background="#ffffff"
@@ -7,267 +8,271 @@
             class="mb20">
         </breadcrumb-header>
         <el-card class="card-box" ref="card-info" v-loading="loading">
-                <div slot="header" class="card-header">
-                    <span>档案信息</span>
-                </div>
-                <el-row type="flex" justify="center">
-                    <el-col :span="18">
-                        <el-descriptions :column="2" border >
-                            <el-descriptions-item label="档案名称" :span="2">
-                                <span>{{form.title}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="档案类型">
-                                <span>{{attTypeName}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="所属分类">
-                                <span>{{catalogTitle}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="所属区域">
-                                <span>{{form.area}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="归档人">
-                                <span>{{form.archiver}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="档案总称">
-                                <span>{{form.generalName}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="档案材料内容">
-                                <span>{{form.summary}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="档案编号">
-                                <span>{{form.attCode}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="历史档案编号">
-                                <span>{{form.attCodeH}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="归档日期">
-                                <span>{{form.createTime}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="资料形成日期">
-                                <span>{{form.attCreateTime}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="保管期限">
-                                <span>{{storageTime}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="档案有效期">
-                                <span>{{form.attExpirationTime}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="箱号">
-                                <span>{{form.boxNo}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="盒号">
-                                <span>{{form.boxesNo}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="案卷号">
-                                <span>{{form.attNumber}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="目录号">
-                                <span>{{form.catalogNumber}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="卷内序号">
-                                <span>{{form.attSerialNumber}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="密级程度">
-                                <span>{{attClassificationName}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="件数/本">
-                                <span>{{form.attCount}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="页数/页码">
-                                <span>{{form.pageNumber}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="保管单位">
-                                <span>{{form.custodyUnit}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="外部相关单位">
-                                <span>{{form.externalUnit}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item label="移交档案部门">
-                                <span>{{form.filingDept}}</span>
-                            </el-descriptions-item>
-                            <el-descriptions-item/>
-                            <el-descriptions-item label="备注" :span="2">
-                                <span>{{form.marks}}</span>
-                            </el-descriptions-item>
-                        </el-descriptions>
-                    </el-col>
-                </el-row>
-            </el-card>
-            <el-card class="card-box" ref="card-upload">
-                <div slot="header">
-                    <span>上转文件</span>
-                </div>
-                <el-row>
-                    <el-col class="mb8" :span="24" align="left" v-for="(item,index) in fileConverted" :key="index" >
-                        <el-tag @click="handleView(item)" class="tag-filename" effect="plain">
-                            <el-row style="width: 100%;">
-                                <el-col :span="20">
-                                    <span>{{ item.fileName }}.{{item.fileType}}</span>
-                                </el-col>
-                                <el-col :span="4" align="right">
-                                    <el-button icon="el-icon-search" circle size="mini" @click="handleView(item)"></el-button>
-                                    <el-button icon="el-icon-download" circle size="mini" @click="handleDownload"></el-button>
-                                </el-col>
-                            </el-row>
-                        </el-tag>
-                    </el-col>
-                </el-row>
-            </el-card>
-            <el-card class="card-box" ref="card-process">
-                <div slot="header">
-                    <span>流程处理</span>
-                </div>
-                <el-tabs v-model="tabPaneProcessActive">
-                    <el-tab-pane name="process" label="流程处理" class="tab-pane-view">
-                        <div class="block">
-                            <el-timeline v-for="history in historyData" :key="history.activityName" :reverse="true">
-                                <el-timeline-item :timestamp="history.endTime" placement="top" v-if="history.completed">
-                                    <el-card style="width: 30%">
-                                        <el-tag type="success">
-                                            节点名称：{{history.activityName}}
-                                        </el-tag>
-                                        <div class="process-history-content">
-                                            <el-descriptions border size="mini" :column="1">
-                                                <el-descriptions-item label="操作者" style="width: 80px;">
-                                                    {{history.assignee}}
-                                                </el-descriptions-item>
-                                                <el-descriptions-item label="操作">
-                                                    {{history.operator}}
-                                                </el-descriptions-item>
-                                                <el-descriptions-item label="处理意见">
-                                                    {{history.comments}}
-                                                </el-descriptions-item>
-                                            </el-descriptions>
-                                        </div>
-                                    </el-card>
-                                </el-timeline-item>
-                            </el-timeline>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane name="process_status" label="流程状态" class="tab-pane-view">
-                        <el-row>
-                          <el-col :md="4" :sm="6" :xs="24" class="pr20 pl20">
-                            <div class="card-panel">
-                                <div class="card-panel-icon-wrapper icon-people">
-                                <svg-icon icon-class="peoples" class-name="card-panel-icon" />
-                                </div>
-                                <div class="card-panel-description">
-                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
-                                <div class="card-panel-text">
-                                    总人次
-                                </div>
-                                </div>
-                            </div>
-                          </el-col>
-                          <el-col :md="4" :sm="6" :xs="24">
-                            <div class="card-panel">
-                                <div class="card-panel-icon-wrapper icon-eye">
-                                <svg-icon icon-class="close-eye" class-name="card-panel-icon" />
-                                </div>
-                                <div class="card-panel-description">
-                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
-                                <div class="card-panel-text">
-                                    未查看
-                                </div>
-                                </div>
-                            </div>
-                          </el-col>
-                          <el-col :md="4" :sm="6" :xs="24">
-                            <div class="card-panel">
-                                <div class="card-panel-icon-wrapper icon-show">
-                                <svg-icon icon-class="show" class-name="card-panel-icon" />
-                                </div>
-                                <div class="card-panel-description">
-                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
-                                <div class="card-panel-text">
-                                    已查看
-                                </div>
-                                </div>
-                            </div>
-                          </el-col>
-                          <el-col :md="4" :sm="6" :xs="24">
-                            <div class="card-panel">
-                                <div class="card-panel-icon-wrapper icon-remove">
-                                <svg-icon icon-class="remove" class-name="card-panel-icon" />
-                                </div>
-                                <div class="card-panel-description">
-                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
-                                <div class="card-panel-text">
-                                    未提交
-                                </div>
-                                </div>
-                            </div>
-                          </el-col>
-                          <el-col :md="4" :sm="6" :xs="24">
-                            <div class="card-panel">
-                                <div class="card-panel-icon-wrapper icon-select">
-                                <svg-icon icon-class="select" class-name="card-panel-icon" />
-                                </div>
-                                <div class="card-panel-description">
-                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
-                                <div class="card-panel-text">
-                                    已提交
-                                </div>
-                                </div>
-                            </div>
-                          </el-col>
-                          <el-col :md="4" :sm="6" :xs="24">
-                            <div class="card-panel">
-                                <div class="card-panel-icon-wrapper icon-notification">
-                                <svg-icon icon-class="notification" class-name="card-panel-icon" />
-                                </div>
-                                <div class="card-panel-description">
-                                <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
-                                <div class="card-panel-text">
-                                    总催办次
-                                </div>
-                                </div>
-                            </div>
-                          </el-col>
+            <div slot="header" class="card-header">
+                <span>档案信息</span>
+            </div>
+            <el-row type="flex" justify="center">
+                <el-col :span="18">
+                    <el-descriptions :column="2" border >
+                        <el-descriptions-item label="档案名称" :span="2">
+                            <span>{{form.title}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="档案类型">
+                            <span>{{attTypeName}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="所属分类">
+                            <span>{{catalogTitle}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="所属区域">
+                            <span>{{form.area}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="归档人">
+                            <span>{{form.archiver}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="档案总称">
+                            <span>{{form.generalName}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="档案材料内容">
+                            <span>{{form.summary}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="档案编号">
+                            <span>{{form.attCode}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="历史档案编号">
+                            <span>{{form.attCodeH}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="归档日期">
+                            <span>{{form.createTime}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="资料形成日期">
+                            <span>{{form.attCreateTime}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="保管期限">
+                            <span>{{storageTime}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="档案有效期">
+                            <span>{{form.attExpirationTime}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="箱号">
+                            <span>{{form.boxNo}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="盒号">
+                            <span>{{form.boxesNo}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="案卷号">
+                            <span>{{form.attNumber}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="目录号">
+                            <span>{{form.catalogNumber}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="卷内序号">
+                            <span>{{form.attSerialNumber}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="密级程度">
+                            <span>{{attClassificationName}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="件数/本">
+                            <span>{{form.attCount}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="页数/页码">
+                            <span>{{form.pageNumber}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="保管单位">
+                            <span>{{form.custodyUnit}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="外部相关单位">
+                            <span>{{form.externalUnit}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item label="移交档案部门">
+                            <span>{{form.filingDept}}</span>
+                        </el-descriptions-item>
+                        <el-descriptions-item/>
+                        <el-descriptions-item label="备注" :span="2">
+                            <span>{{form.marks}}</span>
+                        </el-descriptions-item>
+                    </el-descriptions>
+                </el-col>
+            </el-row>
+        </el-card>
+        <el-card class="card-box" ref="card-upload">
+            <div slot="header">
+                <span>上转文件</span>
+            </div>
+            <el-row>
+                <el-col class="mb8" :span="24" align="left" v-for="(item,index) in fileConverted" :key="index" >
+                    <el-tag @click="handleView(item)" class="tag-filename" effect="plain">
+                        <el-row style="width: 100%;">
+                            <el-col :span="20">
+                                <span>{{ item.fileName }}.{{item.fileType}}</span>
+                            </el-col>
+                            <el-col :span="4" align="right">
+                                <el-button icon="el-icon-search" circle size="mini" @click="handleView(item)"></el-button>
+                                <el-button icon="el-icon-download" circle size="mini" @click="handleDownload"></el-button>
+                            </el-col>
                         </el-row>
-                    </el-tab-pane>
-                    <el-tab-pane name="process_chart" label="流程图" class="tab-pane-view">
-                        <process-viewer :processData="processData" />
-                    </el-tab-pane>
-                    <el-tab-pane name="process_table" label="流程表格" class="tab-pane-view">
+                    </el-tag>
+                </el-col>
+            </el-row>
+        </el-card>
+        <el-card class="card-box" ref="card-process">
+            <div slot="header">
+                <span>流程处理</span>
+            </div>
+            <el-tabs v-model="tabPaneProcessActive">
+                <el-tab-pane name="process" label="流程处理" class="tab-pane-view">
+                    <div class="block">
+                        <el-timeline v-for="history in historyData" :key="history.activityName" :reverse="true">
+                            <el-timeline-item :timestamp="history.endTime" placement="top" v-if="history.completed">
+                                <el-card style="width: 30%">
+                                    <el-tag type="success">
+                                        节点名称：{{history.activityName}}
+                                    </el-tag>
+                                    <div class="process-history-content">
+                                        <el-descriptions border size="mini" :column="1">
+                                            <el-descriptions-item label="操作者" style="width: 80px;">
+                                                {{history.assignee}}
+                                            </el-descriptions-item>
+                                            <el-descriptions-item label="操作">
+                                                {{history.operator}}
+                                            </el-descriptions-item>
+                                            <el-descriptions-item label="处理意见">
+                                                {{history.comments}}
+                                            </el-descriptions-item>
+                                        </el-descriptions>
+                                    </div>
+                                </el-card>
+                            </el-timeline-item>
+                        </el-timeline>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane name="process_status" label="流程状态" class="tab-pane-view">
+                    <el-row>
+                        <el-col :md="4" :sm="6" :xs="24" class="pr20 pl20">
+                        <div class="card-panel">
+                            <div class="card-panel-icon-wrapper icon-people">
+                            <svg-icon icon-class="peoples" class-name="card-panel-icon" />
+                            </div>
+                            <div class="card-panel-description">
+                            <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                            <div class="card-panel-text">
+                                总人次
+                            </div>
+                            </div>
+                        </div>
+                        </el-col>
+                        <el-col :md="4" :sm="6" :xs="24">
+                        <div class="card-panel">
+                            <div class="card-panel-icon-wrapper icon-eye">
+                            <svg-icon icon-class="close-eye" class-name="card-panel-icon" />
+                            </div>
+                            <div class="card-panel-description">
+                            <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                            <div class="card-panel-text">
+                                未查看
+                            </div>
+                            </div>
+                        </div>
+                        </el-col>
+                        <el-col :md="4" :sm="6" :xs="24">
+                        <div class="card-panel">
+                            <div class="card-panel-icon-wrapper icon-show">
+                            <svg-icon icon-class="show" class-name="card-panel-icon" />
+                            </div>
+                            <div class="card-panel-description">
+                            <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                            <div class="card-panel-text">
+                                已查看
+                            </div>
+                            </div>
+                        </div>
+                        </el-col>
+                        <el-col :md="4" :sm="6" :xs="24">
+                        <div class="card-panel">
+                            <div class="card-panel-icon-wrapper icon-remove">
+                            <svg-icon icon-class="remove" class-name="card-panel-icon" />
+                            </div>
+                            <div class="card-panel-description">
+                            <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                            <div class="card-panel-text">
+                                未提交
+                            </div>
+                            </div>
+                        </div>
+                        </el-col>
+                        <el-col :md="4" :sm="6" :xs="24">
+                        <div class="card-panel">
+                            <div class="card-panel-icon-wrapper icon-select">
+                            <svg-icon icon-class="select" class-name="card-panel-icon" />
+                            </div>
+                            <div class="card-panel-description">
+                            <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                            <div class="card-panel-text">
+                                已提交
+                            </div>
+                            </div>
+                        </div>
+                        </el-col>
+                        <el-col :md="4" :sm="6" :xs="24">
+                        <div class="card-panel">
+                            <div class="card-panel-icon-wrapper icon-notification">
+                            <svg-icon icon-class="notification" class-name="card-panel-icon" />
+                            </div>
+                            <div class="card-panel-description">
+                            <count-to :start-val="0" :end-val="0" :duration="2600" class="card-panel-num" />
+                            <div class="card-panel-text">
+                                总催办次
+                            </div>
+                            </div>
+                        </div>
+                        </el-col>
+                    </el-row>
+                </el-tab-pane>
+                <el-tab-pane name="process_chart" label="流程图" class="tab-pane-view">
+                    <process-viewer :processData="processData" />
+                </el-tab-pane>
+                <el-tab-pane name="process_table" label="流程表格" class="tab-pane-view">
 
-                    </el-tab-pane>
-                    <el-tab-pane name="process_log" label="流程日志" class="tab-pane-view">
-                        
-                    </el-tab-pane>
-                </el-tabs>
-            </el-card>
-            <el-card class="card-box" ref="card-permission">
-                <div slot="header">
-                    <span>权限</span>
-                </div>
-            </el-card>
-            <el-card class="card-box" ref="card-statistics">
-                <div slot="header">
-                    <span>访问统计</span>
-                </div>
-                <el-table :data="kmsVisited">
-                  <el-table-column label="序号" type="index" width="68" />
-                  <el-table-column label="阅读人" align="center" prop="userVisited"/>
-                  <el-table-column label="阅读时间" align="center" prop="visitTime" />
-                  <el-table-column label="部门" align="center" prop="deptName" />
-                  <el-table-column label="阅读阶段" align="center" prop="readState" />
-                </el-table>
-                <pagination
-                    v-show="kmsVisitedTotal>0"
-                    :total="kmsVisitedTotal"
-                    :page.sync="kmsVisitQueryParams.pageNum"
-                    :limit.sync="kmsVisitQueryParams.pageSize"
-                    @pagination="getKmsVisit(form.id)"
-                />
-            </el-card>
-            <el-card class="card-box" ref="card-borrow">
-                <div slot="header">
-                    <span>借阅记录</span>
-                </div>
-            </el-card>
+                </el-tab-pane>
+                <el-tab-pane name="process_log" label="流程日志" class="tab-pane-view">
+                    
+                </el-tab-pane>
+            </el-tabs>
+        </el-card>
+        <el-card class="card-box" ref="card-permission">
+            <div slot="header">
+                <span>权限</span>
+            </div>
+        </el-card>
+        <el-card class="card-box" ref="card-statistics">
+            <div slot="header">
+                <span>访问统计</span>
+            </div>
+            <el-table :data="kmsVisited">
+                <el-table-column label="序号" type="index" width="68" />
+                <el-table-column label="阅读人" align="center" prop="userVisited"/>
+                <el-table-column label="阅读时间" align="center" prop="visitTime" />
+                <el-table-column label="部门" align="center" prop="deptName" />
+                <el-table-column label="阅读阶段" align="center" prop="readState" />
+            </el-table>
+            <pagination
+                v-show="kmsVisitedTotal>0"
+                :total="kmsVisitedTotal"
+                :page.sync="kmsVisitQueryParams.pageNum"
+                :limit.sync="kmsVisitQueryParams.pageSize"
+                @pagination="getKmsVisit(form.id)"
+            />
+        </el-card>
+        <el-card class="card-box" ref="card-borrow">
+            <div slot="header">
+                <span>借阅记录</span>
+            </div>
+        </el-card>
         <el-backtop />
     </div>
+    <div class="error" v-if="form == null">
+        <error/>
+    </div>
+</div>
 </template>
 
 <script>
@@ -275,7 +280,7 @@
     import { listArea } from "@/api/kms/area";
     import BreadcrumbHeader from "../../kms/components/breadcrumb-header";
     import { listCustodyUnit } from "@/api/kms/custody-unit";
-    import {addMain, getMain, previewAttFile } from "@/api/kms/main";
+    import {addMain, getAttachment, previewAttFile } from "@/api/kms/main";
     import moment from 'moment'
     import Treeselect from "@riophae/vue-treeselect";
     import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -287,13 +292,15 @@
     import ProcessViewer from '@/views/activiti/components/process-viewer';
     import CountTo from 'vue-count-to'
     import { listKmsVisit } from '@/api/kms/kms-visit'
+    import Error from '../../kms/components/error/401'
 
     export default {
         components:{
             BreadcrumbHeader,
             Treeselect,
             ProcessViewer,
-            CountTo
+            CountTo,
+            Error
         },
         data() {
             return {
@@ -340,8 +347,9 @@
         },
         methods:{
             getKmsMain(){
-                const id = this.$route.params && this.$route.params.id
-                getMain(id).then(res => {
+                const id = this.$route.params && this.$route.query.attachmentId
+                this.form = null
+                getAttachment(id).then(res => {
                     const data = res.data
                     this.form = data
                     getCatalog(this.form.catalogId).then(res => {
@@ -393,14 +401,14 @@
                     }
 
                     currentProcess(this.form.processInstanceId).then(response => {
-                        const findHistory = response.data;
-                        this.historyData = findHistory
+                        const historyData = response.data;
+                        this.historyData = historyData
                         this.historyData.forEach(item => {
                             if(item.class == "startEvent"){
                                 this.historyData.fdAssignee = ""
                             }
                         });
-                        this.processData.nodeData = findHistory
+                        this.processData.nodeData = historyData
                     })
 
                     previewAttFile(this.form.id).then(res => {
@@ -412,7 +420,10 @@
 
                     this.getKmsVisit(this.form.id);
                     
-                })
+                }).catch(err => {
+                    console.log(err)
+                    //this.$router.push('/401')
+                });
                 
             },
             getKmsVisit(id){

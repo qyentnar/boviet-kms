@@ -147,14 +147,6 @@ public class KmsCatalogServiceImpl implements IKmsCatalogService
         return childList;
     }
 
-    private Map<String, Object> toMapTreeSelect(KmsCatalog catalog){
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", catalog.getId());
-        map.put("label", catalog.getTitle());
-        map.put("children", catalog.getChildren());
-        return map;
-    }
-
     private Boolean hashChild(List<KmsCatalog> catalogs, KmsCatalog catalog){
         return getChildList(catalogs, catalog).size() > 0;
     }

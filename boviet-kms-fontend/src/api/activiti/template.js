@@ -12,7 +12,7 @@ export function listTemplate(query) {
 // 查询流程模板详细
 export function getTemplate(id) {
   return request({
-    url: '/sys/activiti/template/getTemplate/' + id,
+    url: '/sys/activiti/template/getTemplateById/' + id,
     method: 'get'
   })
 }
@@ -44,9 +44,9 @@ export function delTemplate(id) {
 }
 
 // 查询审批任务
-export function findTask(key,assignee) {
+export function getTaskList(key,assignee) {
   return request({
-    url: '/sys/activiti/template/findTask/' + key+"/"+assignee,
+    url: '/sys/activiti/template/getTaskList/' + key+"/"+assignee,
     method: 'get'
   })
 }
@@ -60,16 +60,16 @@ export function completeTask(data) {
 }
 
 // 历史审批记录
-export function findHistory(key) {
+export function getHistory(key) {
   return request({
-    url: '/sys/activiti/template/findHistory/' + key,
+    url: '/sys/activiti/template/getHistory/' + key,
     method: 'get'
   })
 }
 
-export function findAllNodes(key) {
+export function getNodes(key) {
   return request({
-    url: '/sys/activiti/template/findAllNodes/' + key,
+    url: '/sys/activiti/template/getNodes/' + key,
     method: 'get'
   })
 }
@@ -77,6 +77,13 @@ export function findAllNodes(key) {
 export function currentProcess(key) {
   return request({
     url: '/sys/activiti/template/currentProcess/' + key,
+    method: 'get'
+  })
+}
+
+export function getAllHistory(){
+  return request({
+    url: '/sys/activiti/template/getAllHistory',
     method: 'get'
   })
 }

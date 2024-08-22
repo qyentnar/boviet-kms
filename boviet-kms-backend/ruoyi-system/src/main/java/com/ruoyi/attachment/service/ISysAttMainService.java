@@ -10,6 +10,15 @@ import java.util.List;
  */
 public interface ISysAttMainService{
 
-    List<SysAttFile> findConverted(Long kmsId);
+    /**
+     * 
+     * @param kmsId
+     * @return
+     */
+    List<SysAttFile> findConverted(String kmsId);
+
+    /**
+     * 
+     */
     void deleteNoUsedAttAndFile();
 }

@@ -1,9 +1,6 @@
 package com.ruoyi.attachment.mapper;
 
 import com.ruoyi.attachment.domain.SysAttMain;
-
-import io.lettuce.core.dynamic.annotation.Param;
-
 import org.apache.ibatis.annotations.Mapper;
 
 import java.io.IOException;
@@ -39,9 +36,18 @@ public interface SysAttMainMapper{
      */
     public List<SysAttMain> selectAttMainList(SysAttMain sysAttMain);
 
+    /**
+     * 
+     * @return
+     */
     List<Long> findNoUsedAttId();
 
-    public int deleteByIds(Long[] ids);
+    /**
+     * 
+     * @param ids
+     * @return
+     */
+    public int deleteByIds(String[] ids);
 
     /**
      * 

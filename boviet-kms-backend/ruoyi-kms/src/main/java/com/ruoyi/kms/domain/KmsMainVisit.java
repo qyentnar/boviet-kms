@@ -22,7 +22,7 @@ public class KmsMainVisit extends BaseEntity
 
     /** 知识ID */
     @Excel(name = "知识ID")
-    private Long kmsId;
+    private String kmsId;
 
     /** 用户 */
     @Excel(name = "用户")
@@ -57,12 +57,12 @@ public class KmsMainVisit extends BaseEntity
     {
         return id;
     }
-    public void setKmsId(Long kmsId) 
+    public void setKmsId(String kmsId) 
     {
         this.kmsId = kmsId;
     }
 
-    public Long getKmsId() 
+    public String getKmsId() 
     {
         return kmsId;
     }

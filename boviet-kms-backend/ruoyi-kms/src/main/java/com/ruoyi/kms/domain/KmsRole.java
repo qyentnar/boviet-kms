@@ -20,7 +20,7 @@ public class KmsRole extends BaseEntity
 
     /**  */
     @Excel(name = "")
-    private Long kmsId;
+    private String kmsId;
 
     /**  */
     @Excel(name = "")
@@ -50,12 +50,12 @@ public class KmsRole extends BaseEntity
     {
         return id;
     }
-    public void setKmsId(Long kmsId) 
+    public void setKmsId(String kmsId) 
     {
         this.kmsId = kmsId;
     }
 
-    public Long getKmsId() 
+    public String getKmsId() 
     {
         return kmsId;
     }

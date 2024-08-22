@@ -24,7 +24,7 @@ public interface KmsRoleMapper
      * @param kId
      * @return
      */
-    public KmsRole selectKmsRoleByKmsId(Long kId);
+    public KmsRole selectKmsRoleByKmsId(String kId);
 
 
     /**

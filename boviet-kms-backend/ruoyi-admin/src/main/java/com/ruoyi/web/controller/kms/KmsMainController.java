@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.kms;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.KmsScope;
@@ -13,12 +15,16 @@ import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.kms.domain.KmsMain;
 import com.ruoyi.kms.domain.KmsMainVisit;
 import com.ruoyi.kms.service.IKmsMainService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -58,11 +64,13 @@ public class KmsMainController extends BaseController
         List<KmsMainVo> list = kmsMainService.selectKmsMainListTemp(kmsMain);
         return getDataTable(list);
     }
-
+    
+    @KmsScope
     @GetMapping("/listKmsTasks")
-    public TableDataInfo listKmsTasks() {
+    public TableDataInfo listKmsTasks(KmsMainDto kmsMain) {
         startPage();
-        List<KmsMainVo> list = kmsMainService.selectKmsTaskRunning(getUsername());
+        LoginUser loginUser = getLoginUser();
+        List<KmsMainVo> list = kmsMainService.selectKmsTaskRunning(kmsMain, loginUser.getUser());
         return getDataTable(list);
     }
     
@@ -93,9 +101,23 @@ public class KmsMainController extends BaseController
      * 获取知识详细信息
      */
     @GetMapping(value = "/get/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(kmsMainService.selectKmsMainById(id));
+    }
+
+    /**
+     * 获取知识详细信息
+     */
+    @GetMapping(value = "/attachment/{id}")
+    public AjaxResult getAttachment(@PathVariable("id") String id)
+    {
+        LoginUser loginUser = getLoginUser();
+        KmsMainVo kmsMainVo = kmsMainService.selectKmsMainByAuthor(id, loginUser.getUser());
+        if(kmsMainVo == null){
+            return AjaxResult.error("您没有该知识的查看权限");
+        }
+        return AjaxResult.success(kmsMainVo);
     }
 
     /**
@@ -126,7 +148,7 @@ public class KmsMainController extends BaseController
      */
     @Log(title = "发布知识", businessType = BusinessType.UPDATE)
     @PostMapping("/startProcess")
-    public AjaxResult startProcess(@RequestBody Long id)
+    public AjaxResult startProcess(@RequestParam String id)
     {
         return toAjax(kmsMainService.startProcess(id));
     }
@@ -137,7 +159,7 @@ public class KmsMainController extends BaseController
      */
     @Log(title = "删除知识", businessType = BusinessType.DELETE)
 	@DeleteMapping("/delete/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
+    public AjaxResult remove(@PathVariable String[] ids)
     {
         return toAjax(kmsMainService.deleteKmsMainByIds(ids));
     }
@@ -146,9 +168,9 @@ public class KmsMainController extends BaseController
      * 获取版本列表
      */
     @GetMapping("/listVersion")
-    public AjaxResult listVersion(@RequestParam Long kmsId)
+    public AjaxResult listVersion(@RequestParam String kmsId)
     {
-        List<KmsMain> list = kmsMainService.listVerson(kmsId);
+        List<KmsMain> list = kmsMainService.listVersion(kmsId);
         return AjaxResult.success(list);
     }
 
@@ -163,6 +185,14 @@ public class KmsMainController extends BaseController
 
         kmsMainDto.setUpdateBy(getUsername());
         return toAjax(kmsMainService.kmsReader(kmsMainDto, kmsMainVisit));
+    }
+    
+    @GetMapping("/getHistoryApprove")
+    public TableDataInfo getHistoryApprove() {
+        startPage();
+        LoginUser loginUser = getLoginUser();
+        List<Map<String, Object>> list = kmsMainService.getHistoryApprove(loginUser.getUser());
+        return getDataTable(list);
     }
     
 }

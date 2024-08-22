@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
-    <select id="selectKmsMainToAuthorByKId" parameterType="Long" resultMap="KmsMainToAuthorResult">
+    <select id="selectKmsMainToAuthorByKId" parameterType="String" resultMap="KmsMainToAuthorResult">
         <include refid="selectKmsMainToAuthorVo"/>
         where k_id = #{kId}
     </select>
@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where k_id = #{kId}
     </update>
 
-    <delete id="deleteKmsMainToAuthorByKId" parameterType="Long">
+    <delete id="deleteKmsMainToAuthorByKId" parameterType="String">
         delete from kms_main_to_author where k_id = #{kId}
     </delete>
 

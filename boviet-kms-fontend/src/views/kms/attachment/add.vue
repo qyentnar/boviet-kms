@@ -18,7 +18,7 @@
                 </div>
                 <el-row type="flex" justify="center">
                     <el-col :span="18">
-                        <el-descriptions :column="2" border size="mini">
+                        <el-descriptions :column="2" border size="mini" class="kms-info">
                             <el-descriptions-item label="档案名称" :span="2">
                                 <el-input v-model="form.title" placeholder="请输入档案名称" size="mini"/>
                             </el-descriptions-item>
@@ -134,26 +134,74 @@
                   </el-col>
                 </el-row>
             </el-card>
-            <el-card class="card-box" ref="card-permission">
+            <el-card class="card-box card-permission" ref="card-permission">
                 <div slot="header">
                     <span>权限</span>
                 </div>
-                
+                <el-descriptions :column="1" border class="descriptions-permission" >
+                    <el-descriptions-item label="档案权限">
+                        <el-input
+                            type="textarea"
+                            placeholder=""
+                            :autosize="{ minRows: 6, maxRows: 6}"
+                            resize="none"
+                            readonly/>
+                            <el-button icon="el-icon-search" @click="handlePermission"/>
+                    </el-descriptions-item>
+                </el-descriptions>
             </el-card>
         </el-form>
+        <<el-dialog
+            title="权限"
+            :visible.sync="open"
+            width="30%"
+            style="height: 680px;">
+            <div class="dialog-body">
+                <el-tabs v-model="activeTab" type="card" tab-position="top" @tab-click="">
+                    <el-tab-pane label="部门" name="department">
+                        <div class="head-container">
+                            <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
+                                style="margin-bottom: 20px" />
+                        </div>
+                        <div class="head-container">
+                            <el-tree :data="deptOptions" 
+                                    :props="defaultProps" 
+                                    :expand-on-click-node="false"
+                                    :filter-node-method="filterNode" 
+                                    ref="dept_tree" 
+                                    default-expand-all 
+                                    highlight-current
+                                    show-checkbox
+                                    @check-change="handleDepartmentChange"/>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="用户组" name="group">
+                    </el-tab-pane>
+                    <el-tab-pane label="用户" name="user">
+                    </el-tab-pane>
+                </el-tabs>
+                
+            </div>
+            <div slot="footer">
+                <el-button @click="cancel">Cancel</el-button>
+                <el-button type="primary">OK</el-button>
+            </div>
+        </el-dialog>
+        
         <el-backtop />
     </div>
 </template>
 
 <script>
-    import { getCatalog } from "@/api/kms/catalog";
-    import { listArea } from "@/api/kms/area";
-    import BreadcrumbHeader from "../../kms/components/breadcrumb-header";
-    import { listCustodyUnit } from "@/api/kms/custody-unit";
-    import {addMain, updateMain } from "@/api/kms/main";
+    import { getCatalog } from "@/api/kms/catalog"
+    import { listArea } from "@/api/kms/area"
+    import BreadcrumbHeader from "../../kms/components/breadcrumb-header"
+    import { listCustodyUnit } from "@/api/kms/custody-unit"
+    import {addMain, updateMain } from "@/api/kms/main"
     import moment from 'moment'
     import { listAttachmentType } from "@/api/kms/attachment-type"
     import { listStorageTime } from "@/api/kms/storage-time"
+    import { treeselect } from "@/api/system/dept"
 
     export default {
         components:{
@@ -181,6 +229,19 @@
                     {id: 3, name: "绝密"},
                 ],
                 directory:"",
+                open: false,
+                activeTab:"department",
+                deptName:"",
+                deptOptions: undefined,
+                defaultProps: {
+                    children: "children",
+                    label: "label"
+                },
+                permissions: {
+                    department: [],
+                    user: [],
+                    group: [],
+                },
             }
         },
         created(){
@@ -188,35 +249,50 @@
         mounted() {
             this.getList()
         },
+        watch: {
+            // 根据名称筛选部门树
+            deptName(val) {
+            this.$refs.dept_tree.filter(val);
+            }
+        },
         methods:{
             getList(){
                 const id = this.$route.params && this.$route.params.catalogId
-                getCatalog(id).then(res => {
-                    const data = res.data
-                    if(data != undefined) {
-                        this.kmsCatalog = data
-                        this.directory = this.kmsCatalog.title
-                    }
-                    else{
-                        this.close();
-                    }
-                })
+                if (id){
+                    getCatalog(id).then(res => {
+                        const data = res.data
+                        if(data != undefined) {
+                            this.kmsCatalog = data
+                            this.directory = this.kmsCatalog.title
+                        }
+                        else{
+                            this.close();
+                        }
+                    })
 
-                listAttachmentType().then(res => {
-                    this.attTypeOptions = res.rows
-                })
+                    listAttachmentType().then(res => {
+                        this.attTypeOptions = res.rows
+                    })
+                    
+                    listStorageTime().then(res => {
+                        this.storageTimeOptions = res.rows
+                    })
+
+                    listArea().then(res => {
+                        this.areaOptions = res.rows
+                    })
+
+                    listCustodyUnit().then(res => {
+                        this.custodyUnitOptions = res.rows
+                    })
+
+                    this.getDepartment()
+                    
+                }
+                else{
+                    this.close();
+                }
                 
-                listStorageTime().then(res => {
-                    this.storageTimeOptions = res.rows
-                })
-
-                listArea().then(res => {
-                    this.areaOptions = res.rows
-                })
-
-                listCustodyUnit().then(res => {
-                    this.custodyUnitOptions = res.rows
-                })
             },
             gotoBack(){
                 this.$router.back()
@@ -258,6 +334,26 @@
                 this.form.fileName = names
                 this.form.attMainIds = attMainIds
             },
+            getDepartment() {
+                treeselect().then(response => {
+                    this.deptOptions = response.data;
+                });
+            },
+            // 筛选节点
+            filterNode(value, data) {
+            if (!value) return true;
+            return data.label.indexOf(value) !== -1;
+            },
+            handleDepartmentChange(data, checked, indeterminate) {
+                if(checked) {
+                    this.permissions.department.push(data.id);
+                }else{
+                    const index = this.permissions.department.indexOf(data.id);
+                    if(index > -1){
+                        this.permissions.department.splice(index, 1);
+                    }
+                }
+            },
             submitForm(oper) {
                 this.loading = true
                 if(this.validate()) {
@@ -291,6 +387,12 @@
                 this.$router.push({
                     path: "/kms/attachment"
                 })
+            },
+            cancel(){
+                this.open = false;
+            },
+            handlePermission(){
+                this.open = true;
             }
         }
     }
@@ -316,4 +418,37 @@
         padding: 5px 0;
         margin-bottom: 20px;
     }
+</style>
+
+<style lang="scss">
+.descriptions-permission {
+    .el-descriptions__body {
+        .el-descriptions__table {
+            .el-descriptions-row {
+                .el-descriptions-item__label {
+                    width: 15%;
+                    text-align: center;
+                    font-size: 16px;
+                }
+                .el-descriptions-item__content {
+                    display: flex;
+                }
+            }
+        }
+    }
+}
+
+.kms-info{
+    .el-descriptions__body {
+        .el-descriptions__table {
+            .el-descriptions-row {
+                .el-descriptions-item__cell {
+                    color: black;
+                    letter-spacing: 1px;
+                    font-size: 16px;
+                }
+            }
+        }
+    }
+}
 </style>

@@ -27,7 +27,7 @@ public class KmsMainToAuthorServiceImpl implements IKmsMainToAuthorService
      * @return 【请填写功能名称】
      */
     @Override
-    public List<KmsMainToAuthor> selectKmsMainToAuthorByKId(Long kId)
+    public List<KmsMainToAuthor> selectKmsMainToAuthorByKId(String kId)
     {
         return kmsMainToAuthorMapper.selectKmsMainToAuthorByKId(kId);
     }
@@ -75,7 +75,7 @@ public class KmsMainToAuthorServiceImpl implements IKmsMainToAuthorService
      * @return 结果
      */
     @Override
-    public int deleteKmsMainToAuthorByKIds(Long[] kIds)
+    public int deleteKmsMainToAuthorByKIds(String[] kIds)
     {
         return kmsMainToAuthorMapper.deleteKmsMainToAuthorByKIds(kIds);
     }
@@ -87,14 +87,14 @@ public class KmsMainToAuthorServiceImpl implements IKmsMainToAuthorService
      * @return 结果
      */
     @Override
-    public int deleteKmsMainToAuthorByKId(Long kId)
+    public int deleteKmsMainToAuthorByKId(String kId)
     {
         return kmsMainToAuthorMapper.deleteKmsMainToAuthorByKId(kId);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void batchAdd(Long kId, List<String> authors) {
+    public void batchAdd(String kId, List<String> authors) {
         deleteAuthor(kId);
 
         KmsMainToAuthor authorEntity = new KmsMainToAuthor();
@@ -109,7 +109,7 @@ public class KmsMainToAuthorServiceImpl implements IKmsMainToAuthorService
     }
 
     @Override
-    public void deleteAuthor(Long kId) {
+    public void deleteAuthor(String kId) {
         kmsMainToAuthorMapper.deleteKmsMainToAuthorByKId(kId);
     }
 }

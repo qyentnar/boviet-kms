@@ -32,7 +32,7 @@ public class KmsMainVo extends BaseEntity
      */
     @ApiModelProperty("主键id")
     @Id
-    private Long id;
+    private String id;
 
     /**
      * 知识标题
@@ -123,13 +123,13 @@ public class KmsMainVo extends BaseEntity
     private List<String> extAuthor;
 
     @ApiModelProperty("原始ID:指1.0的ID")
-    private Long originId;
+    private String originId;
 
     @ApiModelProperty("是否最新版本:1-是，0-不是")
     private Integer isNewVersion;
 
     @ApiModelProperty("当前最新版本id")
-    private Long currentVersionId;
+    private String currentVersionId;
 
     private String processInstanceId;
 

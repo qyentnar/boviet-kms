@@ -195,11 +195,12 @@
         created(){
         },
         mounted() {
-            this.getKmsMain()
+            this.getKmsMain();
+            // document.getElementsByClassName("vue-treeselect__control")[0].style.tableLayout = "auto";
         },
         methods:{
             getKmsMain(){
-                const id = this.$route.params && this.$route.params.id
+                const id = this.$route.query && this.$route.query.attachmentId
                 getMain(id).then(res => {
                     const data = res.data
                     this.form = data
@@ -324,5 +325,19 @@
         align-items: center;
         padding: 5px 0;
         margin-bottom: 20px;
+    }
+</style>
+
+<style lang="scss">
+    .vue-treeselect__control {
+        table-layout: auto;
+    }
+
+    .vue-treeselect__x-container {
+        padding-right: 10px;
+    }
+
+    .vue-treeselect__control-arrow-container{
+        padding-right: 10px;
     }
 </style>

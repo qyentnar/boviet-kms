@@ -61,7 +61,7 @@ public class KmsMainToAuthorController extends BaseController
      * 获取【请填写功能名称】详细信息
      */
     @GetMapping(value = "/{kId}")
-    public AjaxResult getInfo(@PathVariable("kId") Long kId)
+    public AjaxResult getInfo(@PathVariable("kId") String kId)
     {
         return AjaxResult.success(kmsMainToAuthorService.selectKmsMainToAuthorByKId(kId));
     }
@@ -92,7 +92,7 @@ public class KmsMainToAuthorController extends BaseController
     @PreAuthorize("@ss.hasPermi('kms:author:remove')")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{kIds}")
-    public AjaxResult remove(@PathVariable Long[] kIds)
+    public AjaxResult remove(@PathVariable String[] kIds)
     {
         return toAjax(kmsMainToAuthorService.deleteKmsMainToAuthorByKIds(kIds));
     }

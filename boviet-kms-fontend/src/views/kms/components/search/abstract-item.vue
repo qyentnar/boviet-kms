@@ -126,7 +126,10 @@ export default {
     goInfo(row) {
       kmsReader(row).then(res => {
         this.$router.push({
-          path: '/kms/attachment/view/' + row.id
+          path: '/kms/attachment/view',
+          query: {
+            attachmentId: row.id,
+          }
         })
       })
     },

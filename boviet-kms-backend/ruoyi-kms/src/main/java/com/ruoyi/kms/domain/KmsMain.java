@@ -32,7 +32,7 @@ public class KmsMain
      */
     @ApiModelProperty("主键id")
     @Id
-    private Long id;
+    private String id;
 
     /**
      * 知识标题
@@ -128,7 +128,7 @@ public class KmsMain
     private Long updateUserId;
 
     @ApiModelProperty("原始ID:指1.0的ID")
-    private Long originId;
+    private String originId;
 
     @ApiModelProperty("是否最新版本:1-是，0-不是")
     private Integer isNewVersion;
@@ -237,5 +237,4 @@ public class KmsMain
     /** 备注 */
     @ApiModelProperty("备注")
     private String marks;
-
 }

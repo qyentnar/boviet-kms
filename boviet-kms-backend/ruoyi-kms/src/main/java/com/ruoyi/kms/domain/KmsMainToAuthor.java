@@ -22,7 +22,7 @@ public class KmsMainToAuthor extends BaseEntity
     private Long id;
 
     /** 知识id */
-    private Long kId;
+    private String kId;
 
     /** 作者id */
     private Long authorId;
@@ -32,12 +32,12 @@ public class KmsMainToAuthor extends BaseEntity
      */
     private String authorName;
 
-    public void setkId(Long kId)
+    public void setkId(String kId)
     {
         this.kId = kId;
     }
 
-    public Long getkId()
+    public String getkId()
     {
         return kId;
     }

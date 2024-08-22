@@ -17,7 +17,7 @@ public interface IKmsMainToAuthorService
      * @param kId 【请填写功能名称】主键
      * @return 【请填写功能名称】
      */
-    public List<KmsMainToAuthor> selectKmsMainToAuthorByKId(Long kId);
+    public List<KmsMainToAuthor> selectKmsMainToAuthorByKId(String kId);
 
     /**
      * 查询【请填写功能名称】列表
@@ -49,7 +49,7 @@ public interface IKmsMainToAuthorService
      * @param kIds 需要删除的【请填写功能名称】主键集合
      * @return 结果
      */
-    public int deleteKmsMainToAuthorByKIds(Long[] kIds);
+    public int deleteKmsMainToAuthorByKIds(String[] kIds);
 
     /**
      * 删除【请填写功能名称】信息
@@ -57,9 +57,18 @@ public interface IKmsMainToAuthorService
      * @param kId 【请填写功能名称】主键
      * @return 结果
      */
-    public int deleteKmsMainToAuthorByKId(Long kId);
+    public int deleteKmsMainToAuthorByKId(String kId);
 
-    public void batchAdd(Long kId, List<String> authors);
+    /**
+     * 
+     * @param kId
+     * @param authors
+     */
+    public void batchAdd(String kId, List<String> authors);
 
-    public void deleteAuthor(Long kId);
+    /**
+     * 
+     * @param kId
+     */
+    public void deleteAuthor(String kId);
 }

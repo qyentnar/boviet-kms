@@ -53,22 +53,8 @@
                 <span>{{scope.row.version | versionFilter}}</span>
             </template>
         </el-table-column>
-        <!--<el-table-column label="所属目录" align="center" prop="catalogId" />-->
-        <!-- <el-table-column label="所属部门" align="center" prop="deptId" />-->
-        <!--<el-table-column label="知识正文" align="center" prop="mainContent" />-->
-        <!--<el-table-column label="知识摘要" align="center" prop="summary" />
-      <el-table-column label="关键字" align="center" prop="keyword" />
-      <el-table-column label="知识封面" align="center" prop="coverImg" />-->
-        <!--<el-table-column label="版本号" align="center" prop="version" />
-      <el-table-column label="发布时间" align="center" prop="publishDate" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.publishDate, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="阅读量" align="center" prop="readCount" />-->
         <el-table-column label="创建者" align="center" prop="createBy" width="80" />
         <el-table-column label="创建时间" align="center" prop="createTime" />
-        <!--<el-table-column label="更新人" align="center" prop="updateBy" />-->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
                 <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['kms:main:edit']" v-if="scope.row.state!=20">编辑</el-button>

@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.activiti.domain.SysActivitiTemplate;
 import com.ruoyi.activiti.service.ISysActivitiTemplateService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -115,10 +116,10 @@ public class SysActivitiTemplateController extends BaseController
         return toAjax(sysActivitiTemplateService.deleteSysActivitiTemplateByIds(ids));
     }
 
-    @GetMapping(value = "/findTask/{processInstanceId}/{assignee}")
-    public AjaxResult findTask(@PathVariable("processInstanceId") String processInstanceId,@PathVariable("assignee") String assignee)
+    @GetMapping(value = "/getTaskList/{processInstanceId}/{assignee}")
+    public AjaxResult getTaskList(@PathVariable("processInstanceId") String processInstanceId,@PathVariable("assignee") String assignee)
     {
-        return AjaxResult.success(sysActivitiTemplateService.findMyTaskList(processInstanceId,assignee));
+        return AjaxResult.success(sysActivitiTemplateService.getTaskList(processInstanceId,assignee));
     }
 
     @PostMapping(value = "/completeTask")
@@ -127,20 +128,20 @@ public class SysActivitiTemplateController extends BaseController
         return AjaxResult.success(sysActivitiTemplateService.completeTask(sysActivitiApprove));
     }
 
-    @GetMapping(value = "/findHistory/{processInstanceId}")
-    public AjaxResult findHistory(@PathVariable("processInstanceId") String processInstanceId)
+    @GetMapping(value = "/getHistory/{processInstanceId}")
+    public AjaxResult getHistory(@PathVariable("processInstanceId") String processInstanceId)
     {
-        return AjaxResult.success(sysActivitiTemplateService.findHistory(processInstanceId));
+        return AjaxResult.success(sysActivitiTemplateService.getHistoryByProcessInstanceId(processInstanceId));
     }
 
-    @GetMapping("/findAllNodes/{processInstanceId}")
-    public AjaxResult findAllNodes(@PathVariable("processInstanceId") String processInstanceId) {
-        return AjaxResult.success(sysActivitiTemplateService.findAllNodes(processInstanceId));
+    @GetMapping("/getNodes/{processInstanceId}")
+    public AjaxResult getNodes(@PathVariable("processInstanceId") String processInstanceId) {
+        return AjaxResult.success(sysActivitiTemplateService.getNodeByProcessInstanceId(processInstanceId));
     }
 
-    @GetMapping("/findAllTasks")
-    public AjaxResult findAllTasks() {
-        return AjaxResult.success(sysActivitiTemplateService.findAllTasks());
+    @GetMapping("/getAllTasks")
+    public AjaxResult getAllTasks() {
+        return AjaxResult.success(sysActivitiTemplateService.getAllTasks());
     }
 
     @GetMapping("/currentProcess/{processInstanceId}")
@@ -148,9 +149,15 @@ public class SysActivitiTemplateController extends BaseController
         return AjaxResult.success(sysActivitiTemplateService.currentProcess(processInstanceId));
     }
     
-    @GetMapping("/getTemplate/{id}")
-    public AjaxResult getTemplate(@PathVariable("id") Long id) {
-        return AjaxResult.success(sysActivitiTemplateService.getTemplate(id));
+    @GetMapping("/getTemplateById/{id}")
+    public AjaxResult getTemplateById(@PathVariable("id") Long id) {
+        return AjaxResult.success(sysActivitiTemplateService.getTemplateById(id));
+    }
+    
+    @GetMapping("/getAllHistory")
+    public AjaxResult getAllHistory() {
+        LoginUser login = getLoginUser();
+        return AjaxResult.success(sysActivitiTemplateService.getHistoryByUser(login.getUser()));
     }
     
     

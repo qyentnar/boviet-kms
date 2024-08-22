@@ -10,8 +10,8 @@
                 </el-form-item>
                 <el-form-item label="操作" prop="handle">
                     <el-radio-group v-model="form.handle" style="padding-left: 0px;">
-                        <el-radio label="通过" name=""></el-radio>
-                        <el-radio label="驳回"></el-radio>
+                        <el-radio label="approve">通过</el-radio>
+                        <el-radio label="reject">驳回</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <!-- <el-form-item label="驳回到" style="margin-bottom: 20px" v-if="refuseTo" prop="nodeValue">
@@ -125,7 +125,7 @@ export default {
             isCurrentAssignee: false,
             activeName: "history",
             form: {
-                handle: '通过',
+                handle: 'approve',
                 desc: '同意',
                 nodeValue: '',
             },
@@ -243,7 +243,8 @@ export default {
             const data = {
                 processInstanceId: this.processInstance.processInstanceId,
                 assignee: this.name,
-                comment: this.form.desc
+                comment: this.form.desc,
+                handle: this.form.handle
             }
             completeTask(data).then(response => {
                 if (response.msg == undefined || response.msg == "") {

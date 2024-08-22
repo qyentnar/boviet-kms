@@ -25,7 +25,7 @@ public interface KmsMainMapper extends BaseMapper<KmsMain>
      * @param id 【请填写功能名称】主键
      * @return 【请填写功能名称】
      */
-    public KmsMainVo selectKmsMainById(Long id);
+    public KmsMainVo selectKmsMainById(String id);
 
     
     public List<KmsMainVo> selectKmsMainByAttCode(String attCode);
@@ -81,7 +81,7 @@ public interface KmsMainMapper extends BaseMapper<KmsMain>
      * @param id 【请填写功能名称】主键
      * @return 结果
      */
-    public int deleteKmsMainById(Long id);
+    public int deleteKmsMainById(String id);
 
     /**
      * 批量删除【请填写功能名称】
@@ -89,7 +89,7 @@ public interface KmsMainMapper extends BaseMapper<KmsMain>
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteKmsMainByIds(Long[] ids);
+    public int deleteKmsMainByIds(String[] ids);
 
     /**
      * 批量增加可阅读者
@@ -104,5 +104,5 @@ public interface KmsMainMapper extends BaseMapper<KmsMain>
      * @param knowId
      * @return
      */
-    List<String> selectUserIdsByParam(@Param("knowId") Long knowId);
+    List<String> selectUserIdsByParam(@Param("knowId") String knowId);
 }

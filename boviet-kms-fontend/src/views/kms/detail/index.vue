@@ -48,7 +48,7 @@
 
 <script>
 import { getMain, previewAttFile, listVersion } from "@/api/kms/main";
-import { findTask, findHistory, findAllNodes } from "@/api/activiti/template"
+import { getTaskList, getHistory, getNodes } from "@/api/activiti/template"
 import { fileIconStyle } from '@/utils/fileType'
 import ActivitiApprove from "@/views/activiti/components/activiti-approve";
 import { completeTask } from '@/api/activiti/template';
@@ -94,19 +94,19 @@ export default {
                 this.kmsData = response.data;
                 this.loading = false;
                 this.processInstanceId = this.kmsData.processInstanceId;
-                findTask(this.processInstanceId, this.name).then(response => {
-                    const findTask = response.data;
-                    this.activitData = findTask
-                    console.log('findTask=========:', findTask)
+                getTaskList(this.processInstanceId, this.name).then(response => {
+                    const taskList = response.data;
+                    this.activitData = taskList
+                    console.log('taskList=========:', taskList)
                 })
-                findHistory(this.processInstanceId).then(response => {
-                    const findHistory = response.data;
-                    this.historyData = findHistory
-                    console.log('findHistory=========:', findHistory)
+                getHistory(this.processInstanceId).then(response => {
+                    const historyData = response.data;
+                    this.historyData = historyData
+                    console.log('historyData=========:', historyData)
                 })
-                findAllNodes(this.processInstanceId).then(response => {
-                    const findNodes = response.data;
-                    console.log('findAllNodes=========:', findNodes)
+                getNodes(this.processInstanceId).then(response => {
+                    const nodeData = response.data;
+                    console.log('getNodes=========:', nodeData)
                 })
             })
             previewAttFile(this.id).then(response => {

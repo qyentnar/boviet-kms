@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 知识 入参KmsMainDto
@@ -28,7 +29,7 @@ public class KmsMainDto extends BaseEntity implements Serializable {
      * 主键id
      */
     @ApiModelProperty("主键id")
-    private Long id;
+    private String id = UUID.randomUUID().toString().replace("-", "").toUpperCase();
 
     /**
      * 知识标题
@@ -151,7 +152,7 @@ public class KmsMainDto extends BaseEntity implements Serializable {
 
     private List<String> extAuthor;
 
-    private Long originId;
+    private String originId;
 
     @ApiModelProperty("是否最新版本:1-是，0-不是")
     private Integer isNewVersion;
@@ -160,7 +161,7 @@ public class KmsMainDto extends BaseEntity implements Serializable {
     private Integer operation;
 
     @ApiModelProperty("当前最新版本id")
-    private Long currentVersionId;
+    private String currentVersionId;
 
     /** 档案类型 */
     @ApiModelProperty("档案类型")
@@ -252,4 +253,5 @@ public class KmsMainDto extends BaseEntity implements Serializable {
     private Map<String, Object> params;
 
     private Map<String, Object> searchTimes;
+
 }

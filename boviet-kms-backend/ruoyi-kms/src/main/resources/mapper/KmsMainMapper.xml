@@ -108,7 +108,7 @@
         ${params.dataScope} </where>
     </select>
 
-    <select id="selectKmsMainById" parameterType="Long" resultMap="KmsMainResult">
+    <select id="selectKmsMainById" parameterType="String" resultMap="KmsMainResult">
         <include refid="selectKmsMainVo" /> where id = #{id} and del_flag = 0
     </select>
 
@@ -123,6 +123,7 @@
     <insert id="insertKmsMain" keyProperty="id" useGeneratedKeys="true"
         parameterType="com.ruoyi.kms.dto.KmsMainDto"> insert into kms_main <trim prefix="("
             suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
             <if test="title != null">title,</if>
             <if test="catalogId != null">catalog_id,</if>
             <if test="deptId != null">dept_id,</if>
@@ -168,6 +169,7 @@
         </trim>
         <trim
             prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
             <if test="title != null">#{title},</if>
             <if test="catalogId != null">#{catalogId},</if>
             <if test="deptId != null">#{deptId},</if>
@@ -261,7 +263,7 @@
         </trim>
         where id = #{id} </update>
 
-    <delete id="deleteKmsMainById" parameterType="Long"> 
+    <delete id="deleteKmsMainById" parameterType="String"> 
         update kms_main set del_flag = 1 where id = #{id} 
     </delete>
 
@@ -281,5 +283,9 @@
 
     <select id="selectUserIdsByParam" resultType="String"> 
         SELECT user_id FROM kms_main_reader WHERE know_id = #{knowId} 
+    </select>
+
+    <select id="selectKmsMainByAttCode" parameterType="String" resultMap="KmsMainResult">
+        <include refid="selectKmsMainVo"/> where att_code like concat('%',#{attCode},'%')
     </select>
 </mapper>

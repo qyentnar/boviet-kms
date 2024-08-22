@@ -6,6 +6,8 @@ import java.util.Map;
 import com.ruoyi.activiti.domain.SysActivitiTemplate;
 import com.ruoyi.activiti.dto.SysActivitiApprove;
 import com.ruoyi.activiti.dto.SysActivitiTemplateDto;
+import com.ruoyi.common.core.domain.entity.SysUser;
+
 import org.activiti.engine.runtime.ProcessInstance;
 
 /**
@@ -64,19 +66,66 @@ public interface ISysActivitiTemplateService
      */
     public int deleteSysActivitiTemplateById(Long id);
 
+    /**
+     * 
+     * @param key
+     * @return
+     */
     public ProcessInstance startProcessInstanceByKey(String key);
 
-    public List<Map<String,Object>> findMyTaskList(String processInstanceId,String assignee);
+    /**
+     * 
+     * @param processInstanceId
+     * @param assignee
+     * @return
+     */
+    public List<Map<String,Object>> getTaskList(String processInstanceId,String assignee);
 
+    /**
+     * 
+     * @param sysActivitiApprove
+     * @return
+     */
     public Boolean completeTask(SysActivitiApprove sysActivitiApprove);
 
-    public List<Map<String,Object>> findHistory(String processInstanceId);
+    /**
+     * 
+     * @param processInstanceId
+     * @return
+     */
+    public List<Map<String,Object>> getHistoryByProcessInstanceId(String processInstanceId);
 
-    public List<Map<String, Object>> findAllNodes(String processInstanceId);
+    /**
+     * 
+     * @param processInstanceId
+     * @return
+     */
+    public List<Map<String, Object>> getNodeByProcessInstanceId(String processInstanceId);
 
-    public List<Map<String, Object>> findAllTasks();
+    /**
+     * 
+     * @return
+     */
 
+    public List<Map<String, Object>> getAllTasks();
+
+    /**
+     * 
+     * @param processInstanceId
+     * @return
+     */
     public List<Map<String,Object>> currentProcess(String processInstanceId);
 
-    public SysActivitiTemplate getTemplate(Long id);
+    /**
+     * 
+     * @param id
+     * @return
+     */
+    public SysActivitiTemplate getTemplateById(Long id);
+
+    /**
+     * 
+     * @return
+     */
+    public List<Map<String, Object>> getHistoryByUser(SysUser sysUser);
 }

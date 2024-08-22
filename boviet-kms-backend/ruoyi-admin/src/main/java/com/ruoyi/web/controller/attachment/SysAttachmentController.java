@@ -176,7 +176,7 @@ public class SysAttachmentController extends BaseController
     @ApiOperation(value = "预览文件")
     @PostMapping(value = "/find/converted")
     public AjaxResult findConverted(@RequestParam String kmsId){
-        List<SysAttFile> converted = sysAttMainService.findConverted(Long.parseLong(kmsId));
+        List<SysAttFile> converted = sysAttMainService.findConverted(kmsId);
         return AjaxResult.success(converted);
     }
 }

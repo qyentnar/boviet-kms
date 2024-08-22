@@ -26,7 +26,7 @@ public class SysAttMain extends BaseEntity {
 
     /** 业务ID */
     @ApiModelProperty("业务数据ID")
-    private Long modelId;
+    private String modelId;
 
     /** 业务实体类路径 */
     @ApiModelProperty("业务实体类路径")

@@ -17,7 +17,7 @@ public class KmsMainUserListDto {
     /**
      * 主文档id
      */
-    private Long knowId;
+    private String knowId;
 
     /**
      * 用户id

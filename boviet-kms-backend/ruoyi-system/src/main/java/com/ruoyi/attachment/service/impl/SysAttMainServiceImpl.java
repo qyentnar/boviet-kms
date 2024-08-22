@@ -27,7 +27,7 @@ public class SysAttMainServiceImpl implements ISysAttMainService {
     private SysAttMainMapper sysAttMainMapper;
 
     @Override
-    public List<SysAttFile> findConverted(Long kmsId) {
+    public List<SysAttFile> findConverted(String kmsId) {
         log.info("预览附件;当前知识ID为:[{}]", () -> kmsId);
         SysAttMain sysAttMain = new SysAttMain();
         sysAttMain.setModelId(kmsId);
@@ -43,7 +43,11 @@ public class SysAttMainServiceImpl implements ISysAttMainService {
     public void deleteNoUsedAttAndFile() {
         List<Long> ids = sysAttMainMapper.findNoUsedAttId();
         if (!CollectionUtil.isEmpty(ids)) {
-            sysAttMainMapper.deleteByIds(ids.toArray(new Long[]{}));
+            String[] newIds = new String[ids.size()]; 
+            for (int i = 0; i < ids.size(); i++) {
+                newIds[i] = String.valueOf(ids.get(i));
+            }
+            sysAttMainMapper.deleteByIds(newIds);
         }
     }
 }

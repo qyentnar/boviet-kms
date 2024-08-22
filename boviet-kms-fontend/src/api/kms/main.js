@@ -34,6 +34,14 @@ export function getMain(id) {
   })
 }
 
+// 查询【请填写功能名称】详细
+export function getAttachment(id) {
+  return request({
+    url: '/kms/main/attachment/' + id,
+    method: 'get'
+  })
+}
+
 // 新增【请填写功能名称】
 export function addMain(data) {
   return request({
@@ -64,7 +72,7 @@ export function startProcess(id){
   return request({
     url: '/kms/main/startProcess',
     method: 'post',
-    data: id
+    params: {id: id}
   })
 }
 // 删除【请填写功能名称】
@@ -111,4 +119,11 @@ export function listVersion(id) {
   })
 }
 
+
+export function getHistoryApprove(){
+  return request({
+    url: '/kms/main/getHistoryApprove',
+    method: 'get'
+  })
+}
 
